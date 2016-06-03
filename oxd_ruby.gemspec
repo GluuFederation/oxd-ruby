@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Inderpal Singh"]
   spec.email         = ["inderpal6785@gmail.com"]
 
-  spec.summary       = %q{Oxd Ruby Library}
-  spec.description   = %q{Oxd Ruby Library}
+  spec.summary       = %q{Oxd Ruby on Rails Gem}
+  spec.description   = %q{A Ruby on Rails Client for oxD Server}
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
   spec.license       = "MIT"
 

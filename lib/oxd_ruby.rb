@@ -1,9 +1,11 @@
-require "oxd_ruby/version"
-require 'oxd_ruby/config'
-require 'oxd_ruby/classes/client-socket-oxd-rp'
+# OxdRuby gem main file
+# @author Inderpal Singh
+# @version 2.4.3
+
+# require all files recursively from oxd_ruby dir
+Dir[File.expand_path(File.join(File.dirname(File.absolute_path(__FILE__)), '/oxd_ruby')) + "/**/*.rb"].each do |file|
+    require file
+end
 
 module OxdRuby
-  def self.initialize_socket(base_url)
-    Client_Socket_OXD_RP.new(base_url)
-  end
 end

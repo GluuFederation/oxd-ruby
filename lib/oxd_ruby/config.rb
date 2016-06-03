@@ -1,45 +1,40 @@
+# This file stores default configuration values for Oxd commands.
+# @author Inderpal Singh
+# @version 2.4.3
+
 module OxdRuby
-	def self.configure(&block)
+	class << self
+		attr_accessor :configuration
+	end
+
+	def self.configure
+		self.configuration ||= Configuration.new
 		if block_given?
-			yield @config ||= OxdRuby::Configuration.new
+			yield(configuration)
 		end
 	end
 
-	def self.config
-		@config
-	end
-
-	# Configuration class
 	class Configuration
-		include ActiveSupport::Configurable
-		
-		# Set default Configuration variables
-		config_accessor(:oxd_host_ip) {'127.0.0.1'}
-		config_accessor(:oxd_host_port) {8099}
-		config_accessor(:authorization_redirect_uri) {''}
-		config_accessor(:logout_redirect_uri) {''}
-		config_accessor(:scope) {[ "openid", "profile" ]}
-		config_accessor(:application_type) {"web"}
-		config_accessor(:redirect_uris) {''}
-		config_accessor(:response_types) {["code"]}
-		config_accessor(:grant_types) {"authorization_code"}
-		config_accessor(:acr_values) {[ "basic", "duo" ]}	                
-	end
+		attr_accessor :oxd_id, :oxd_host_ip, :oxd_host_port, :authorization_redirect_uri, :logout_redirect_uri, :post_logout_redirect_uri, :scope, :application_type, :redirect_uris, :response_types, :client_jwks_uri, :client_token_endpoint_auth_method, :client_request_uris, :contacts, :grant_types, :acr_values, :client_logout_uris
 
-	# Set default Configuration variables
-=begin
-	configure do |config|
-		config.oxd_host_ip                = '127.0.0.1'
-		config.oxd_host_port      		  = 8099
-		config.authorization_redirect_uri = ""
-		config.logout_redirect_uri 		  = ""
-		config.scope					  = [ "openid", "profile" ]
-		config.application_type       	  = "web"
-		config.redirect_uris     		  = [ "" ]
-		config.response_types     		  = ["code"]
-		config.grant_types 				  = "authorization_code"
-		config.acr_values 				  = [ "basic", "duo" ]
+		def initialize
+			@oxd_id								= ""
+			@oxd_host_ip                		= '127.0.0.1'
+			@oxd_host_port      				= 8099
+			@authorization_redirect_uri 		= ""
+			@logout_redirect_uri 				= ""
+			@post_logout_redirect_uri			= ""
+			@scope					  			= [ "openid", "profile" ]
+			@application_type       			= "web"
+			@redirect_uris     		  			= [ "" ]
+			@response_types     				= ["code"]
+			@client_jwks_uri			  		= ""
+			@client_token_endpoint_auth_method	= ""
+			@client_request_uris				= [ "" ]
+			@contacts							= [ "" ]
+			@grant_types 						= "authorization_code"
+			@acr_values 						= [ "basic", "duo" ]
+			@client_logout_uris		  			= [ "" ]
+		end
 	end
-=end
-
 end
