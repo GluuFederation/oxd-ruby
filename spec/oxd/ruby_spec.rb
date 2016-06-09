@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe OxdRuby do
+describe Oxd::Ruby do
   it 'has a version number' do
-    expect(OxdRuby::VERSION).not_to be nil
+    expect(Oxd::Ruby::VERSION).not_to be nil
   end
 
   it 'does something useful' do

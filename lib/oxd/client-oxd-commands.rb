@@ -2,10 +2,12 @@
 # @author Inderpal Singh
 # @version 2.4.3
 
-module OxdRuby
+require_relative 'client-oxd-rp' 
+
+module Oxd
 	class ClientOxdCommands < ClientOxdRp
 		def initialize
-			@config = OxdRuby.configuration
+			@configuration = Oxd.config
 			super
 		end
 
@@ -13,26 +15,26 @@ module OxdRuby
 		# Returns:
         # => The status (boolean) of the registration of site
 		def register_site			
-			if(!@config.oxd_id.present?)
+			if(!@configuration.oxd_id.present?)
 				@command = 'register_site'
-				@config.scope = [ "openid", "profile","email"]
+				@configuration.scope = [ "openid", "profile","email"]
 				@params = {
-		        	"authorization_redirect_uri" => @config.authorization_redirect_uri,
-		            "post_logout_redirect_uri" => @config.post_logout_redirect_uri,
-		            "application_type" => @config.application_type,
-		            "redirect_uris" => @config.redirect_uris,
-		            "acr_values" => @config.acr_values,
-		            "scope" => @config.scope,
-		            "client_jwks_uri" => @config.client_jwks_uri,
-		            "client_token_endpoint_auth_method" => @config.client_token_endpoint_auth_method,
-		            "client_request_uris" => @config.client_request_uris,
-		            "contacts" => @config.contacts,
-		            "grant_types" => @config.grant_types,
-		            "response_types"=> @config.response_types,
-		            "client_logout_uris"=> @config.client_logout_uris
+		        	"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
+		            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
+		            "application_type" => @configuration.application_type,
+		            "redirect_uris" => @configuration.redirect_uris,
+		            "acr_values" => @configuration.acr_values,
+		            "scope" => @configuration.scope,
+		            "client_jwks_uri" => @configuration.client_jwks_uri,
+		            "client_token_endpoint_auth_method" => @configuration.client_token_endpoint_auth_method,
+		            "client_request_uris" => @configuration.client_request_uris,
+		            "contacts" => @configuration.contacts,
+		            "grant_types" => @configuration.grant_types,
+		            "response_types"=> @configuration.response_types,
+		            "client_logout_uris"=> @configuration.client_logout_uris
 		        }
 		        request
-		        @config.oxd_id = getResponseData['oxd_id']
+		        @configuration.oxd_id = getResponseData['oxd_id']
 		    end	        
 		end
 
@@ -44,8 +46,8 @@ module OxdRuby
 		def get_authorization_url
 			@command = 'get_authorization_url'
 			@params = {
-	            "oxd_id" => @config.oxd_id,
-	            "acr_values" => @config.acr_values
+	            "oxd_id" => @configuration.oxd_id,
+	            "acr_values" => @configuration.acr_values
         	}
 		    request
 		    getResponseData['authorization_url']
@@ -61,7 +63,7 @@ module OxdRuby
 		def get_tokens_by_code( code, scopes, state = nil)
 			@command = 'get_tokens_by_code'
 			@params = {
-	            "oxd_id" => @config.oxd_id,
+	            "oxd_id" => @configuration.oxd_id,
 	            "code" => code,
 	            "scopes" => scopes,
 	            "state" => state
@@ -78,7 +80,7 @@ module OxdRuby
 		def get_tokens_by_code_by_url(url)
 			@command = 'get_tokens_by_code'
 			@params = {
-	            "oxd_id" => @config.oxd_id,
+	            "oxd_id" => @configuration.oxd_id,
 	            "url"	 => url
         	}
 			request
@@ -93,7 +95,7 @@ module OxdRuby
 		def get_user_info(access_token)
 			@command = 'get_user_info'
 	    	@params = {
-	            "oxd_id" => @config.oxd_id,
+	            "oxd_id" => @configuration.oxd_id,
 	            "access_token" => access_token
         	}
         	request
@@ -111,9 +113,9 @@ module OxdRuby
 		def get_logout_uri(access_token, state, session_state)
 			@command = 'get_logout_uri'
 			@params = {
-	            "oxd_id" => @config.oxd_id,
+	            "oxd_id" => @configuration.oxd_id,
 	            "id_token_hint" => access_token,
-	            "post_logout_redirect_uri" => @config.post_logout_redirect_uri,
+	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
 	            "state" => state,
 	            "session_state" => session_state
         	}
@@ -128,21 +130,21 @@ module OxdRuby
 		def update_site_registration
 	    	@command = 'update_site_registration'
         	@params = {
-	        	"authorization_redirect_uri" => @config.authorization_redirect_uri,
-	        	"oxd_id" => @config.oxd_id,
-	            "post_logout_redirect_uri" => @config.post_logout_redirect_uri,
-	            "application_type" => @config.application_type,
-	            "redirect_uris" => @config.redirect_uris,
-	            "acr_values" => @config.acr_values,
-	            "scope" => @config.scope,
-	            "client_jwks_uri" => @config.client_jwks_uri,
-	            "client_token_endpoint_auth_method" => @config.client_token_endpoint_auth_method,
-	            "client_request_uris" => @config.client_request_uris,
-	            "contacts" => @config.contacts,
-	            "grant_types" => @config.grant_types,
-	            "response_types"=> @config.response_types,
+	        	"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
+	        	"oxd_id" => @configuration.oxd_id,
+	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
+	            "application_type" => @configuration.application_type,
+	            "redirect_uris" => @configuration.redirect_uris,
+	            "acr_values" => @configuration.acr_values,
+	            "scope" => @configuration.scope,
+	            "client_jwks_uri" => @configuration.client_jwks_uri,
+	            "client_token_endpoint_auth_method" => @configuration.client_token_endpoint_auth_method,
+	            "client_request_uris" => @configuration.client_request_uris,
+	            "contacts" => @configuration.contacts,
+	            "grant_types" => @configuration.grant_types,
+	            "response_types"=> @configuration.response_types,
 	            "client_secret_expires_at" => 1916258400,
-	            "client_logout_uris"=> @config.client_logout_uris
+	            "client_logout_uris"=> @configuration.client_logout_uris
 	        }
 	        request
 	        getResponseObject['status']

@@ -5,25 +5,25 @@
 require 'socket'
 require 'ipaddr'
 
-module OxdRuby	
+module Oxd	
 	class ClientSocketOxdRp
 		
 		#Socket_oxd constructor
 		def initialize
-			@config = OxdRuby.configuration		
+			@configuration = Oxd.config
 
 			# Initialize Error Log file
 			# Location : app_root/log/oxd-ruby.log
 			@error_logger ||= Logger.new("#{::Rails.root}/log/oxd-ruby.log")
 
-			if !@config.authorization_redirect_uri.present?
+			if !@configuration.authorization_redirect_uri.present?
 				@error_logger.info("oxd-configuration-test: Error problem with json data.")
 			end
-			if (IPAddr.new(@config.oxd_host_ip) rescue nil).nil?
-				@error_logger.info("#{@config.oxd_host_ip} is not a valid IP address")
+			if (IPAddr.new(@configuration.oxd_host_ip) rescue nil).nil?
+				@error_logger.info("#{@configuration.oxd_host_ip} is not a valid IP address")
 			end
-			if !@config.oxd_host_port.is_a?(Integer) && @config.oxd_host_port < 0 && @config.oxd_host_port > 65535
-				@error_logger.info("#{@config.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535")
+			if !@configuration.oxd_host_port.is_a?(Integer) && @configuration.oxd_host_port < 0 && @configuration.oxd_host_port > 65535
+				@error_logger.info("#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535")
 			end	
 		end
 
@@ -33,9 +33,9 @@ module OxdRuby
 		# Returns:
 		# => response - The JSON response from the oxD Server
 		def oxd_socket_request(request, char_count = 8192)
-			@config = OxdRuby.configuration
-			host = @config.oxd_host_ip     # The web server
-			port = @config.oxd_host_port   # Default HTTP port
+			@configuration = Oxd.config
+			host = @configuration.oxd_host_ip     # The web server
+			port = @configuration.oxd_host_port   # Default HTTP port
 
 			if(!socket = TCPSocket.new(host,port) )  # Connect to Oxd server
 				@error_logger.info("Client: socket::socket_connect is not connected")

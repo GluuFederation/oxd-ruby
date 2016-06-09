@@ -2,7 +2,9 @@
 # @author Inderpal Singh
 # @version 2.4.3
 
-module OxdRuby
+require_relative 'client-socket-oxd-rp' 
+
+module Oxd
 	class ClientOxdRp < ClientSocketOxdRp		
 
 	    # Client_oxd initialization.
@@ -19,14 +21,14 @@ module OxdRuby
 	    	exist = false
 	    	i = 0
 	    	until i > @command_types.size
-	    		if (@command_types[i] == getCommand)
+	    		if (@command_types[i] == @command)
 	                exist = true
 	                break
 	            end
 	    		i += 1
 	    	end
 	    	if (!exist)
-	    		@error_logger.info("Command: #{getCommand} does not exist! Exiting process.")
+	    		@error_logger.info("Command: #{@command} does not exist! Exiting process.")
         	end
 	    end
 

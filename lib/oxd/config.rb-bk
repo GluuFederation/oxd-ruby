@@ -2,7 +2,7 @@
 # @author Inderpal Singh
 # @version 2.4.3
 
-module OxdRuby
+module Oxd
 	class << self
 		attr_accessor :configuration
 	end
