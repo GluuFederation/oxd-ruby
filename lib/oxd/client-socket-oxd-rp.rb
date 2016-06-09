@@ -1,6 +1,6 @@
 # A class which takes care of the socket communication with oxD Server.
 # @author Inderpal Singh
-# @version 2.4.3
+# @oxd-version 2.4.3
 
 require 'socket'
 require 'ipaddr'
@@ -8,22 +8,22 @@ require 'ipaddr'
 module Oxd	
 	class ClientSocketOxdRp
 		
-		#Socket_oxd constructor
+		#ClientSocketOxdRp initialization
 		def initialize
 			@configuration = Oxd.config
 
-			# Initialize Error Log file
+			# Initialize Log file
 			# Location : app_root/log/oxd-ruby.log
-			@error_logger ||= Logger.new("#{::Rails.root}/log/oxd-ruby.log")
+			@logger ||= Logger.new("#{::Rails.root}/log/oxd-ruby.log")
 
 			if !@configuration.authorization_redirect_uri.present?
-				@error_logger.info("oxd-configuration-test: Error problem with json data.")
+				@logger.info("Oxd configuration test: Error problem with json data.")
 			end
 			if (IPAddr.new(@configuration.oxd_host_ip) rescue nil).nil?
-				@error_logger.info("#{@configuration.oxd_host_ip} is not a valid IP address")
+				@logger.info("#{@configuration.oxd_host_ip} is not a valid IP address")
 			end
 			if !@configuration.oxd_host_port.is_a?(Integer) && @configuration.oxd_host_port < 0 && @configuration.oxd_host_port > 65535
-				@error_logger.info("#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535")
+				@logger.info("#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535")
 			end	
 		end
 
@@ -38,21 +38,21 @@ module Oxd
 			port = @configuration.oxd_host_port   # Default HTTP port
 
 			if(!socket = TCPSocket.new(host,port) )  # Connect to Oxd server
-				@error_logger.info("Client: socket::socket_connect is not connected")
+				@logger.info("Client: socket::socket_connect is not connected")
 			else
-				@error_logger.info("Client: socket::socket_connect connected : #{request}")
+				@logger.info("Client: socket::socket_connect connected : #{request}")
 			end
 			
 			socket.print(request)               # Send request
 			response = socket.recv(char_count)  # Read response
 			if(response)
-	            @error_logger.info("Client: oxd_socket_response: #{response}")
+	            @logger.info("Client: oxd_socket_response: #{response}")
 	        else
-	            @error_logger.info("Client: oxd_socket_response : Error socket reading process.")
+	            @logger.info("Client: oxd_socket_response : Error socket reading process.")
 	        end
 	        # close connection
 	        if(socket.close)
-	          @error_logger.info("Client: oxd_socket_connection : disconnected.")
+	          @logger.info("Client: oxd_socket_connection : disconnected.")
 	        end
 	        return response
 		end

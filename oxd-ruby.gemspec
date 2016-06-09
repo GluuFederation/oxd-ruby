@@ -9,14 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["inderpal6785"]
   spec.email         = ["inderpal@ourdesignz.com"]
 
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com' to prevent pushes to rubygems.org, or delete to allow pushes to any server."
-  end
-
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
-  spec.license       = "MIT"
+  spec.summary       = %q{Ruby Client Library for Oxd Server - OpenID Connect Client RP Middleware, which organizes authentication and registration of users.}
+  spec.homepage      = "https://github.com/GluuFederation/oxd-ruby"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"

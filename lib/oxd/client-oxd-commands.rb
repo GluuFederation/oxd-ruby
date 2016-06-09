@@ -1,21 +1,23 @@
 # This class carries out the commands to talk with the oxD server. The oxD request commands are provided as class methods that can be called to send the command to the oxD server via socket and the reponse is returned as a dict by the called method.
 # @author Inderpal Singh
-# @version 2.4.3
-
-require_relative 'client-oxd-rp' 
+# @oxd-version 2.4.3
 
 module Oxd
 	class ClientOxdCommands < ClientOxdRp
+
+		# ClientOxdRp initialization
 		def initialize
 			@configuration = Oxd.config
 			super
 		end
 
-		# Function to register the site and generate a unique ID for the site
+		# Function to register the website and generate a unique ID for that website
 		# Returns:
-        # => The status (boolean) of the registration of site
+        # => The oxd_id (mixed) of the registration of website
 		def register_site			
-			if(!@configuration.oxd_id.present?)
+			if(@configuration.oxd_id.present?) # Check if client is already registered
+				return @configuration.oxd_id
+			else
 				@command = 'register_site'
 				@configuration.scope = [ "openid", "profile","email"]
 				@params = {
@@ -53,7 +55,7 @@ module Oxd
 		    getResponseData['authorization_url']
 		end
 
-		# Function to get access code for getting the user details from the OP. It is called after the user authorizies by visiting the auth URL.
+		# Function to get access code for getting the user details from the OP. It is called after the user authorizes by visiting the auth URL.
         # Args:
         # => code (string): code obtained from the auth url callback
         # => scopes (list): scopes authorized by the OP, from the url callback
@@ -87,7 +89,7 @@ module Oxd
 			getResponseData['access_token']
 		end
 
-		# Function to get the information about the user using the access code obtained from the OP
+		# Function to get the information about the user using the access token obtained from the OP
 		# Args:
         # => access_token (string): access token from the get_tokens_by_code function
 		# Returns:
@@ -104,12 +106,12 @@ module Oxd
 
 		# Function to logout the user.
 		# Args:
-        # => id_token_hint (string): OPTIONAL (oxd server will use last used ID Token)
-        # => post_logout_redirect_uri (string): OPTIONAL URI for redirection, this uri would override the value given in the site-config
-        # => state (string): OPTIONAL site state
+        # => id_token_hint (string): OPTIONAL (oxd server will use last used access token)
+        # => post_logout_redirect_uri (string): OPTIONAL URI for redirection, this uri would override the value given in the website-config
+        # => state (string): OPTIONAL website state
         # => session_state (string): OPTIONAL session state
         # Returns:
-        # The URI (string) to which the user must be directed in order to perform the logout
+        # => The URI (string) to which the user must be directed in order to perform the logout
 		def get_logout_uri(access_token, state, session_state)
 			@command = 'get_logout_uri'
 			@params = {
@@ -123,7 +125,7 @@ module Oxd
         	getResponseData['uri']
 		end
 
-		# Fucntion to update the site's information with OpenID Provider.
+		# Fucntion to update the website's information with OpenID Provider.
         # This should be called after changing the values in the config file.
         # Returns:
         # => The status (boolean) for update of information was sucessful or not
