@@ -10,6 +10,12 @@ module Oxd
 			@configuration = Oxd.config
 			super
 		end
+		
+	    # Returns:
+        # => The oxd_id (mixed) of the registration of website
+	    def getOxdId
+        	return @configuration.oxd_id
+	    end
 
 		# Function to register the website and generate a unique ID for that website
 		# Returns:
