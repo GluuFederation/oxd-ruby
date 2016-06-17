@@ -1,0 +1,127 @@
+<div class="jumbotron">
+    <h2>Ruby on Rails demo Site for OxD Ruby Library</h2>
+    <p>This is a demo site showcasing the usage of OxD Ruby Library. The demo site is written in Ruby on Rails and shows that the library can be used to perform OpenID based authentication.</p>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Configuration File</h3>
+        <p>Website specific configuration information is stored in a config file. This is necessary for storing persistant information like Oxd ID generated during the site registration with the Open ID provider.
+        The <code>oxd_config.rb</code> shows the config file used for this demo app. The complete documentation about the config file can be obtained <a href="https://github.com/GluuFederation/oxd-ruby">here in Github</a>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <h3>oxd_config.rb</h3>
+        <pre class="prettyprint">
+Oxd.configure do |config|
+    config.oxd_host_ip = '127.0.0.1'
+    config.oxd_host_port = 8099
+    config.authorization_redirect_uri = "https://domain.example.com/login"
+    config.logout_redirect_uri = "https://domain.example.com/logout"
+    config.post_logout_redirect_uri = "https://domain.example.com/"
+    config.scope = [ "openid", "profile" ]
+    config.application_type = "web"
+    config.redirect_uris = ["https://domain.example.com/login"]
+    config.client_jwks_uri = ""
+    config.client_token_endpoint_auth_method = ""
+    config.client_request_uris = []
+    config.contacts = ["example-email@gmail.com"]
+    config.grant_types = []
+    config.response_types = ["code"]
+    config.acr_values = [ "basic" ]
+    config.client_logout_uris = ['https://domain.example.com/logout']
+end
+        </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Registration and Fetching Auth URL</h3>
+        <p>The first step is to register the client with the OP. Once the client is registered, then the user data can be fetched upon user authorization.
+        oxD Ruby performs client registration automatically when you request for an authorization url. Redirect the user to the authorization url to get user
+        consent.</p>
+        <hr>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  register_site_path %>">Go to Authorization Page</a></p>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def register_site
+    if(!@oxd_command.getOxdId.present?)
+        @oxd_command.register_site
+    end
+    authorization_url = @oxd_command.get_authorization_url
+    redirect_to authorization_url
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+    <h3>Get user information</h3>
+    <p>Once the user authorizes the website to use the information from the OP, the OP calls back the website with code and scopes for accessing the user data in the registered callback <code>authorization_redirect_uri</code> in the config file. Then an access token is obtained from the OP using which user claims can be requested.</p>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def login
+    if(@oxd_command.getOxdId.present?)
+        if (params[:code].present? && params[:state].present?)
+            scopes = params[:scope].split("+")
+            @access_token = @oxd_command.get_tokens_by_code( params[:code], scopes, params[:state])
+        end
+        session.delete('oxd_access_token') if(session[:oxd_access_token].present?)
+        session[:oxd_access_token] = @access_token
+        session[:state] = params[:state]
+        session[:session_state] = params[:session_state]
+        @user = @oxd_command.get_user_info(session[:oxd_access_token])  
+        render :template => "home/index", :locals => { :user => @user }     
+    end
+end
+        </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Using the user claims</h3>
+        <p>Once the user data is obtained, the various claims supported by the OP can be used as required.</p>
+        <% if defined?(user) %>
+        <div class="alert alert-success">
+            <% user.each do |field,value| %>
+               <%= "#{field} : #{value}" %>
+               <br>
+            <% end %>
+        </div>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. You haven't authorized the demo user yet.</div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+        <h3>Template code</h3>
+        <pre class="prettyprint">
+if defined?(user)
+    &lt;div class="alert alert-success"&gt;
+        user.each do |field,value|
+           "#{field} : #{value}"
+           &lt;br&gt;
+        end
+    &lt;/div&gt;
+end
+        </pre>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Logging Out</h3>
+        <p>Once the required work is done the user can be logged out of the system.</p>
+        <a class="btn btn-danger" href="<%= logout_path %>">Logout</a>
+    </div>
+   <div class="col-md-6">
+    <pre class="prettyprint">
+def logout
+    if(session[:oxd_access_token])
+        @logout_url = @oxd_command.get_logout_uri(session[:oxd_access_token], session[:state], session[:session_state])
+        redirect_to @logout_url
+    end    
+end
+    </pre>
+    </div>
+</div>

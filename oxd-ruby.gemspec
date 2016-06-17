@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "oxd-ruby"
   spec.version       = Oxd::VERSION
   spec.authors       = ["inderpal6785"]
-  spec.email         = ["inderpal@ourdesignz.com"]
+  spec.email         = ["inderpal6785@gmail.com"]
 
   spec.summary       = %q{Ruby Client Library for Oxd Server - OpenID Connect Client RP Middleware, which organizes authentication and registration of users.}
   spec.homepage      = "https://github.com/GluuFederation/oxd-ruby"
@@ -19,4 +19,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.8"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rspec-rails"
 end

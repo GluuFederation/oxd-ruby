@@ -1,9 +1,8 @@
-# This file stores default configuration values for Oxd commands.
+# This class holds all the information about the client and the OP metadata
 # @author Inderpal Singh
-# @oxd-version 2.4.3
+# @oxd-version 2.4.3 & 2.4.4
 
 require 'active_support/configurable'
-
 module Oxd
   # Configures global settings for Oxd
   #   Oxd.configure do |config|
@@ -84,7 +83,7 @@ module Oxd
   	config.client_token_endpoint_auth_method = ""
   	config.client_request_uris = []
   	config.scope = [ "openid", "profile" ]
-  	config.contacts = ["inderpal6785@gmail.com"]
+  	config.contacts = ["example-email@gmail.com"]
   	config.response_types = ["code"]
     config.oxd_id = ""
   end 
