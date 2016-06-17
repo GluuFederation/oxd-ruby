@@ -1,4 +1,6 @@
 # Oxd Ruby
+https://badge.fury.io/rb/oxd-ruby.svg
+
 Ruby Client Library for the [Gluu oxD Server RP - v2.4.3 & 2.4.4](http://ox.gluu.org/doku.php?id=oxd:rp).
 
 **oxdruby** is a thin wrapper around the communication protocol of oxD server. This can be used to access the OpenID connect & UMA Authorization end points of the Gluu Server via the oxD RP. This library provides the function calls required by a website to access user information from a OpenID Connect Provider (OP) by using the OxD as the Relying Party (RP).
