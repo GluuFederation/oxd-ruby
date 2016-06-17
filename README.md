@@ -1,5 +1,5 @@
 # Oxd Ruby
-[https://badge.fury.io/rb/oxd-ruby.png](https://badge.fury.io/rb/oxd-ruby)
+[![Gem Version](https://badge.fury.io/rb/oxd-ruby.png)](https://badge.fury.io/rb/oxd-ruby)
 
 Ruby Client Library for the [Gluu oxD Server RP - v2.4.3 & 2.4.4](http://ox.gluu.org/doku.php?id=oxd:rp).
 
