@@ -147,8 +147,8 @@ $ sudo nano /etc/hosts
 
 Add these lines in virtual host file:
 ```
-127.0.0.1 www.oxd-rails.com:3000
-127.0.0.1 oxd-rails.com:3000
+127.0.0.1 www.oxd-rails.com
+127.0.0.1 oxd-rails.com
 ```
 
 Reload the apache server
