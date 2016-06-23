@@ -1,10 +1,12 @@
-# This class holds all the information about the client and the OP metadata
-# @author Inderpal Singh
-# @oxd-version 2.4.3 & 2.4.4
-
 require 'active_support/configurable'
+
+# @author Inderpal Singh
+# @note supports oxd-version 2.4.3
 module Oxd
+
   # Configures global settings for Oxd
+  # @yield config
+  # @example
   #   Oxd.configure do |config|
   #     config.oxd_host_ip = '127.0.0.1'
   #   end
@@ -20,8 +22,9 @@ module Oxd
     @config
   end
 
-  class Configuration #:nodoc:
-    include ActiveSupport::Configurable
+  # This class holds all the information about the client and the OP metadata
+  class Configuration
+    include ActiveSupport::Configurable    
     config_accessor :oxd_host_ip
     config_accessor :oxd_host_port
     config_accessor :application_type
@@ -40,11 +43,11 @@ module Oxd
     config_accessor :response_types
     config_accessor :oxd_id
 
+    # define param_name writer
     def param_name
       config.param_name.respond_to?(:call) ? config.param_name.call : config.param_name
     end
-
-    # define param_name writer (copied from AS::Configurable)
+    
     writer, line = 'def param_name=(value); config.param_name = value; end', __LINE__
     singleton_class.class_eval writer, __FILE__, line
     class_eval writer, __FILE__, line
@@ -68,6 +71,7 @@ module Oxd
   # client_request_uris: [OPTIONAL]
   # contacts: [OPTIONAL, LIST]
   
+  # default values for config
   configure do |config|
   	config.oxd_host_ip = '127.0.0.1' 
   	config.oxd_host_port = 8099 

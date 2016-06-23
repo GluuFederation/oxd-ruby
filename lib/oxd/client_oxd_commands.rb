@@ -1,19 +1,21 @@
-# This class carries out the commands to talk with the oxD server. The oxD request commands are provided as class methods that can be called to send the command to the oxD server via socket and the reponse is returned as a dict by the called method.
 # @author Inderpal Singh
-# @oxd-version 2.4.3 & 2.4.4
-require 'json'
-
+# @note supports oxd-version 2.4.3
 module Oxd
-	class ClientOxdCommands < OxdConnector
 
-		# ClientOxdCommands initialization
+	require 'json'
+
+	# This class carries out the commands to talk with the oxD server.
+	# The oxD request commands are provided as class methods that can be called to send the command 
+	# 	to the oxD server via socket and the reponse is returned as a dict by the called method.
+	class ClientOxdCommands < OxdConnector	
+
+		# class constructor
 		def initialize
 			super
 		end
-		
-		# Function to register the website and generate a unique ID for that website
-		# Returns:
-        # => The oxd_id (mixed) of the registration of website
+
+		# @return [String] oxd_id of the registered website
+		# method to register the website and generate a unique ID for that website
 		def register_site			
 			if(!@configuration.oxd_id.empty?) # Check if client is already registered
 				return @configuration.oxd_id
@@ -40,17 +42,14 @@ module Oxd
 		    end	        
 		end
 
-		# Returns:
-        # => The oxd_id (mixed) of the registration of website
+		# @return [String] stored(in oxd_config) oxd_id of the registered website
 	    def getOxdId
         	return @configuration.oxd_id
 	    end
-
-		# Function to get the authorization url that can be opened in the browser for the user to provide authorization and authentication
-        # Args:
-        # => acr_values (list): OPTIONAL list of acr values in the order of priority
-        # Returns:
-        # => The authorization url (string) that the user must access for authentication and authorization
+		
+		# @param acr_values [Array] OPTIONAL, list of acr values in the order of priority
+		# @return [String] authorization_url
+		# method to get authorization url that the user must be redirected to for authorization and authentication
 		def get_authorization_url(acr_values = [""])
 			@command = 'get_authorization_url'
 			@params = {
@@ -61,13 +60,11 @@ module Oxd
 		    getResponseData['authorization_url']
 		end
 
-		# Function to get access code for getting the user details from the OP. It is called after the user authorizes by visiting the auth URL.
-        # Args:
-        # => code (string): code obtained from the auth url callback
-        # => scopes (list): scopes authorized by the OP, from the url callback
-        # => state (string): state key obtained from the auth url callback
-        # Returns:
-        # => The access token (string) which should be passed to get the user information from the OP
+		# @param code [String] code obtained from the authorization url callback
+		# @param scopes [Array] scopes authorized by the OP, obtained from the authorization url callback
+		# @param state [String] state key obtained from the authorization url callback
+		# @return [String] access_token
+		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
 		def get_tokens_by_code( code, scopes, state = nil)
             if (code.empty? || scopes.empty? || (!scopes.kind_of? Array))
             	logger(:log_msg => "Empty/Wrong value in place of code or scope.")
@@ -83,11 +80,9 @@ module Oxd
 			getResponseData['access_token']
 		end
 
-		# Function to get the information about the user using the access token obtained from the OP
-		# Args:
-        # => access_token (string): access token from the get_tokens_by_code function
-		# Returns:
-        # => The user data claims (named tuple) that are returned by the OP
+		# @param access_token [String] access token recieved from the get_tokens_by_code command
+		# @return [String] user data claims that are returned by the OP
+		# get the information about the user using the access token obtained from the OP
 		def get_user_info(access_token)
 			if access_token.empty?
 	            logger(:log_msg => "Empty access code sent for get_user_info", :error => "Empty access code")
@@ -101,20 +96,17 @@ module Oxd
 			getResponseData['claims']
 		end
 
-		# Function to logout the user.
-		# Args:
-        # => id_token_hint (string): REQUIRED (oxd server will use last used access token)
-        # => post_logout_redirect_uri (string): OPTIONAL URI for redirection, this uri would override the value given in the website-config
-        # => state (string): OPTIONAL website state
-        # => session_state (string): OPTIONAL session state
-        # Returns:
-        # => The URI (string) to which the user must be directed in order to perform the logout
+		# @param access_token [String] REQUIRED, oxd server will use last used access token		
+		# @param state [String] OPTIONAL, website state obtained from the authorization url callback
+		# @param session_state [String] OPTIONAL, session state obtained from the authorization url callback
+		# @return [String] uri
+		# method to retrieve logout url from OP. User must be redirected to this url to perform logout
 		def get_logout_uri(access_token, state = nil, session_state = nil)
 			@command = 'get_logout_uri'
 			@params = {
 	            "oxd_id" => @configuration.oxd_id,
-	            "id_token_hint" => access_token,
-	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
+	            "id_token_hint" => access_token,	            
+	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri, 
 	            "state" => state,
 	            "session_state" => session_state
         	}
@@ -122,10 +114,9 @@ module Oxd
         	getResponseData['uri']
 		end
 
-		# Fucntion to update the website's information with OpenID Provider.
-        # This should be called after changing the values in the config file.
-        # Returns:
-        # => The status (boolean) for update of information was sucessful or not
+		# @return [Boolean] status - if site registration was updated successfully or not
+		# method to update the website's information with OpenID Provider. 
+		# 	This should be called after changing the values in the oxd_config file.
 		def update_site_registration
 	    	@command = 'update_site_registration'
         	@params = {

@@ -1,13 +1,14 @@
-# A class which takes care of the socket communication with oxD Server.
-# @author Inderpal Singh
-# @oxd-version 2.4.3 & 2.4.4
 require 'socket'
 require 'ipaddr'
 
+# @author Inderpal Singh
+# @note supports oxd-version 2.4.3
 module Oxd
+
+	# A class which takes care of the socket communication with oxD Server.
 	class OxdConnector
 
-	    # OxdConnector initialization
+	    # class constructor
 	    def initialize
   			@command	    	
 	    	@response_json
@@ -21,7 +22,7 @@ module Oxd
 			logger(:log_msg => "#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535") if (!@configuration.oxd_host_port.is_a?(Integer) || (@configuration.oxd_host_port < 0 && @configuration.oxd_host_port > 65535))	
 	    end
 
-	    # Checks the command that is to be passed to oxd-server for validity from command_types[Array] list
+	    # Checks the validity of command that is to be passed to oxd-server
 	    def validate_command
 	    	command_types = ['get_authorization_url','update_site_registration', 'get_tokens_by_code','get_user_info', 'register_site', 'get_logout_uri','get_authorization_code']
 	    	if (!command_types.include?(@command))
@@ -29,11 +30,10 @@ module Oxd
         	end
 	    end
 
-	    # oxd_socket_request function sends the command to the oxD server and recieves the response.
-		# Args:
-        # => request - representation of the JSON command string
-		# Returns:
-		# => response - The JSON response from the oxD Server
+		# method to communicate with the oxD server
+		# @param request [JSON] representation of the JSON command string
+		# @param char_count [Integer] number of characters to read from response
+		# @return response from the oxD Server
 		def oxd_socket_request(request, char_count = 8192)
 			host = @configuration.oxd_host_ip     # The web server
 			port = @configuration.oxd_host_port   # Default HTTP port
@@ -58,7 +58,8 @@ module Oxd
 	        return response
 		end
 
-	    # request function sends request to oxd_socket_request method to communicate with oxD server
+		# method to send commands to the oxD server and to recieve the response via {#oxd_socket_request}
+		# @return [JSON] @response_object : response from the oxd server in JSON form
 	    def request
 	    	validate_command
 	    	jsondata = getData.to_json
@@ -87,7 +88,8 @@ module Oxd
 	        return @response_object
 	    end
 
-	    # @return mixed
+	    # extracts 'data' parameter from @response_object
+	    # @return [Mixed] @response_data
 	    def getResponseData
 	    	if (!@response_object)
 	            @response_data = 'Data is empty';
@@ -97,25 +99,28 @@ module Oxd
 	        return @response_data
 	    end
 
-	    # @return array
+	    # combines command and command parameters for socket request
+	    # @return [Array] @data
 	    def getData
 	    	@data = {'command' => @command, 'params' => @params}
         	return @data
 	    end
 
-    	# checking string format: Must be JSON
-    	# @param  String: string
-    	# @return bool
- 		def is_json? (string)
+    	# checks whether the passed string is in JSON format or not
+    	# @param  string_to_validate [String]
+    	# @return [Boolean]
+ 		def is_json? (string_to_validate)
  			begin
-		      !!JSON.parse(string)
+		      !!JSON.parse(string_to_validate)
 		    rescue
 		      false
 		    end 			
  		end
 
- 		# Log response and errors to log file
- 		# Raise Runtime error when an error is encountered
+ 		# Logs server response and errors to log file
+ 		# @param log_msg [Hash] response to print in log file
+ 		# @param error [Hash] error message to print in log file
+ 		# @raise RuntimeError
  		def logger(args={})
  			# Initialize Log file
 			# Location : app_root/log/oxd-ruby.log

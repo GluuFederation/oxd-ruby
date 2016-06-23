@@ -1,7 +1,7 @@
 # Oxd Ruby
 {<img src="https://badge.fury.io/rb/oxd-ruby.png" alt="Gem Version" />}[https://badge.fury.io/rb/oxd-ruby]
 
-Ruby Client Library for the [Gluu oxD Server RP - v2.4.3 & 2.4.4](http://ox.gluu.org/doku.php?id=oxd:rp).
+Ruby Client Library for the [Gluu oxD Server RP - v2.4.3](https://www.gluu.org/docs-oxd/).
 
 **oxdruby** is a thin wrapper around the communication protocol of oxD server. This can be used to access the OpenID connect & UMA Authorization end points of the Gluu Server via the oxD RP. This library provides the function calls required by a website to access user information from a OpenID Connect Provider (OP) by using the OxD as the Relying Party (RP).
 
@@ -42,6 +42,7 @@ Change these settings according to your website otherwise your website will not 
 ## Usage
 
 Add these lines to your application_controller.rb file:
+
 ```ruby
 require 'oxd-ruby'
 
@@ -90,6 +91,7 @@ user = @oxd_command.get_user_info(access_token)
 ### Using the claims
 
 Once the user data is obtained, the various claims supported by the OP can be used as required.
+
 ```ruby
 <% user.each do |field,value| %>
 	<%= "#{field} : #{value}" %>
@@ -100,6 +102,7 @@ The availability of various claims are completely dependent on the OP.
 ### Logging out
 
 Once the required work is done the user can be logged out of the system.
+
 ```ruby
 logout_uri = @oxd_command.get_logout_uri(access_token, state, session_state)
 ```
