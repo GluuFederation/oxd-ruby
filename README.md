@@ -9,7 +9,7 @@ Ruby Client Library for the [Gluu oxD Server RP - v2.4.3](https://www.gluu.org/d
 
 > You are now on the `v2.4.3` branch. If you want to use `oxd-ruby` for production use, switch to the branch of the matching version as the `oxd-server` you are installing.
 
-[oxD RP](http://ox.gluu.org/doku.php?id=oxd:rp) has complete information about the Code Authorization flow and the various details about oxD RP configuration. This document provides only documentation about the oxd-ruby library.
+[oxD RP](https://www.gluu.org/docs-oxd/) has complete information about the Code Authorization flow and the various details about oxD RP configuration. This document provides only documentation about the oxd-ruby library.
 
 ### Prerequisites
 
@@ -21,7 +21,7 @@ Oxd-server needs to be running on your machine to connect with OP.
 To install gem, add this line to your application's Gemfile:
 
 ```ruby
-gem 'oxd-ruby', '~> 0.1.2'
+gem 'oxd-ruby', '~> 0.1.3'
 ```
 
 Run bundle command to install it:
