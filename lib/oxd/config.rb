@@ -27,6 +27,7 @@ module Oxd
     include ActiveSupport::Configurable    
     config_accessor :oxd_host_ip
     config_accessor :oxd_host_port
+    config_accessor :op_host
     config_accessor :application_type
     config_accessor :authorization_redirect_uri
     config_accessor :redirect_uris
@@ -75,6 +76,7 @@ module Oxd
   configure do |config|
   	config.oxd_host_ip = '127.0.0.1' 
   	config.oxd_host_port = 8099 
+    config.op_host = "https://gluu.example.com"
   	config.application_type = "web"
   	config.authorization_redirect_uri = "https://gluu.example.com/callback"
   	config.redirect_uris = ["https://gluu.example.com/callback","https://gluu.example.com/callback2"]

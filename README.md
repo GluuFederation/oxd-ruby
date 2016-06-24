@@ -36,7 +36,7 @@ $ rails generate oxd:config
 ```
 
 The generator will install `oxd_config.rb` initializer file in `config/initializers` directory which conatins ALL of Oxd-Ruby's global configuration options.
-You must set values for `config.oxd_host_ip`, `config.oxd_host_port`, `config.authorization_redirect_uri` in config file.
+You must set values for `config.oxd_host_ip`, `config.oxd_host_port`, `config.op_host`, `config.authorization_redirect_uri` in config file.
 Change these settings according to your website otherwise your website will not be able to communicate properly with the Oxd Server.
 
 ## Usage

@@ -2,6 +2,7 @@
 Oxd.configure do |config|
   	config.oxd_host_ip                			= '127.0.0.1'
 	config.oxd_host_port      		  			= 8099
+	config.op_host					 			= "https://your.openid.provider.com"
 	config.authorization_redirect_uri 			= "https://domain.example.com/callback"
 	config.logout_redirect_uri 		  			= "https://domain.example.com/callback2"
 	config.post_logout_redirect_uri	  			= "https://domain.example.com/logout"

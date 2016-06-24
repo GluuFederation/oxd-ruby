@@ -2,6 +2,7 @@
 Oxd.configure do |config|
   	config.oxd_host_ip                			= '127.0.0.1'
 	config.oxd_host_port      		  			= 8099
+	config.op_host								= "https://ce-dev2.gluu.org"
 	config.authorization_redirect_uri 			= "https://oxd-rails.com/login"
 	config.logout_redirect_uri 		  			= "https://oxd-rails.com/logout"
 	config.post_logout_redirect_uri	  			= "https://oxd-rails.com/logout"

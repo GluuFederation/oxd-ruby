@@ -23,6 +23,7 @@ module Oxd
 				@command = 'register_site'
 				@configuration.scope = [ "openid", "profile","email"]
 				@params = {
+					"op_host" => @configuration.op_host,
 		        	"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
 		            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
 		            "application_type" => @configuration.application_type,
