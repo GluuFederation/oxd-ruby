@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.3
+# @note supports oxd-version 2.4.4
 module Oxd
 
 	require 'json'
@@ -21,7 +21,6 @@ module Oxd
 				return @configuration.oxd_id
 			else
 				@command = 'register_site'
-				@configuration.scope = [ "openid", "profile","email"]
 				@params = {
 					"op_host" => @configuration.op_host,
 		        	"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
@@ -64,7 +63,7 @@ module Oxd
 		# @param code [String] code obtained from the authorization url callback
 		# @param scopes [Array] scopes authorized by the OP, obtained from the authorization url callback
 		# @param state [String] state key obtained from the authorization url callback
-		# @return [String] access_token
+		# @return [Hash] {:access_token, :id_token}
 		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
 		def get_tokens_by_code( code, scopes, state = nil)
             if (code.empty? || scopes.empty? || (!scopes.kind_of? Array))
@@ -97,7 +96,7 @@ module Oxd
 			getResponseData['claims']
 		end
 
-		# @param access_token [String] REQUIRED, oxd server will use last used access token		
+		# @param id_token [String] REQUIRED, oxd server will use last used id_token		
 		# @param state [String] OPTIONAL, website state obtained from the authorization url callback
 		# @param session_state [String] OPTIONAL, session state obtained from the authorization url callback
 		# @return [String] uri
@@ -113,6 +112,7 @@ module Oxd
         	}
         	request
         	getResponseData['uri']
+        	#@configuration.oxd_id = "" #unset oxd_id after logout
 		end
 
 		# @return [Boolean] status - if site registration was updated successfully or not

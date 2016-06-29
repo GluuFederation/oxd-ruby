@@ -1,7 +1,7 @@
 require 'active_support/configurable'
 
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.3
+# @note supports oxd-version 2.4.4
 module Oxd
 
   # Configures global settings for Oxd
@@ -43,6 +43,8 @@ module Oxd
     config_accessor :contacts
     config_accessor :response_types
     config_accessor :oxd_id
+    config_accessor :rpt
+    config_accessor :ticket
 
     # define param_name writer
     def param_name
@@ -84,11 +86,11 @@ module Oxd
   	config.client_logout_uris = ["https://gluu.example.com/callback"]
   	config.logout_redirect_uri = 'https://gluu.example.com/logout'
   	config.grant_types = []
-  	config.acr_values = [ "basic" ]
+  	config.acr_values = ["basic"]
   	config.client_jwks_uri = ""
   	config.client_token_endpoint_auth_method = ""
   	config.client_request_uris = []
-  	config.scope = [ "openid", "profile" ]
+  	config.scope = ["openid", "profile","uma_protection","uma_authorization"]
   	config.contacts = ["example-email@gmail.com"]
   	config.response_types = ["code"]
     config.oxd_id = ""

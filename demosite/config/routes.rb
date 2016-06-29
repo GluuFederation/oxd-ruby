@@ -5,6 +5,16 @@ Rails.application.routes.draw do
   get '/login' => 'home#login'
   get '/logout' => 'home#logout'
   
+  resources :uma do
+    collection do
+      get 'protect_resources'
+      get 'get_rpt'
+      get 'check_access'
+      get 'authorize_rpt'
+      get 'get_gat'
+    end
+  end
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

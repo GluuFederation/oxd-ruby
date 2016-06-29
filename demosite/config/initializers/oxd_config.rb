@@ -5,7 +5,7 @@ Oxd.configure do |config|
 	config.op_host								= "https://ce-dev2.gluu.org"
 	config.authorization_redirect_uri 			= "https://oxd-rails.com/login"
 	config.logout_redirect_uri 		  			= "https://oxd-rails.com/logout"
-	config.post_logout_redirect_uri	  			= "https://oxd-rails.com/logout"
+	config.post_logout_redirect_uri	  			= "https://oxd-rails.com/"
 	config.scope					  			= [ "openid", "profile" ]
 	config.application_type       	  			= "web"
 	config.redirect_uris     		  			= ["https://oxd-rails.com/login" ]

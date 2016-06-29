@@ -1,0 +1,121 @@
+<div class="jumbotron">
+    <h2>UMA RS and UMA RP Demo page for OxD Ruby Library</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RS Protect resources</h3>
+        <p>To protect resources with UMA RS, you need to add resources to library using <code>uma_add_resource(path, *conditions)</code> method. Then you can call <code>uma_rs_protect</code> method to register resources for protection with UMA RS.</p>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=   protect_resources_uma_index_path  %>">Protect Resources</a></p>
+        <% if defined?(protect_resources_response) %>
+        <div class="alert alert-success">
+            <%= "Response Oxd ID: #{protect_resources_response}" %>
+        </div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def protect_resources
+    condition1 = {:httpMethods => ["GET"], :scopes => ["http://photoz.example.com/dev/actions/view"]}
+    condition2 = {:httpMethods => ["PUT", "POST"], 
+                :scopes => ["http://photoz.example.com/dev/actions/all","http://photoz.example.com/dev/actions/add"], 
+                :ticketScopes => ["http://photoz.example.com/dev/actions/add"]
+            }
+    @uma_command.uma_add_resource("/photo", condition1, condition2)
+    @uma_command.uma_rs_protect
+end
+    </pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RP - Get RPT</h3>
+        <p>To gain access to protected resources at the UMA resource server, you must first obtain RPT (Requesting Party Token) using <code>uma_rp_get_rpt(force_new)</code> call.</p>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  get_rpt_uma_index_path %>">Get RPT</a></p>        
+        <% if defined?(rpt) %>
+        <div class="alert alert-success">
+            <%= "Response RPT is: #{rpt}" %>
+        </div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def get_rpt
+    rpt = @uma_command.uma_rp_get_rpt(false)
+    render :template => "uma/index", :locals => { :rpt => rpt } 
+end
+        </pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+    <h3>UMA RS Check Access</h3>
+    <p>To check wether you have access to a particular resource on UMA Resource Sevrer or not, make call to <code>uma_rs_check_access(path, http_method)</code> method.</p>
+    <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  check_access_uma_index_path %>">Check access</a></p>
+    <% if defined?(check_access_response) %>
+        <% if check_access_response['access'] == 'denied' %>
+            <div class="alert alert-warning">
+                <%= "Response : access #{check_access_response['access']}" %><br>
+                <%= "Response ticket : #{check_access_response['ticket']}" if check_access_response['ticket'].present? %>
+            </div>
+        <% else %>
+            <div class="alert alert-success">
+                <%= "Response : #{check_access_response}" %>
+            </div>
+        <% end %>    
+    <% end %>
+    </div>
+    <div class="col-md-6">
+    	<pre class="prettyprint">
+def check_access
+    response = @uma_command.uma_rs_check_access('/photo', 'GET')
+    render :template => "uma/index", :locals => { :check_access_response => response } 
+end
+		</pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RP - Authorize RPT</h3>
+        <p>You must first get RPT (refer to 'Get RPT' section) before authorizing. If you have already obtained the RPT, use <code>uma_rp_authorize_rpt</code> method provided by oxd-ruby library to authorize RPT.</p>
+       <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  authorize_rpt_uma_index_path %>">Authorize RPT</a></p>
+       <% if defined?(authorize_rpt_response) %>
+        <div class="alert alert-success">
+            <%= "Response Oxd ID: #{authorize_rpt_response}" %>
+        </div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def authorize_rpt
+    response = @uma_command.uma_rp_authorize_rpt
+    render :template => "uma/index", :locals => { :authorize_rpt_response => response }
+end
+        </pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RP - Get GAT</h3>
+        <p>To obtain GAT(Gluu Access Token) call to <code>uma_rp_get_gat(scopes)</code> method with scopes as parameter.</p>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  get_gat_uma_index_path %>">Get GAT</a></p>
+        <% if defined?(gat) %>
+        <div class="alert alert-success">
+            <%= "Response GAT is: #{gat}" %>
+        </div>
+        <% end %>
+    </div>
+   <div class="col-md-6">
+    <pre class="prettyprint">
+def get_gat 
+    scopes = ["http://photoz.example.com/dev/actions/add","http://photoz.example.com/dev/actions/view","http://photoz.example.com/dev/actions/edit"]
+    gat = @uma_command.uma_rp_get_gat(scopes)
+    render :template => "uma/index", :locals => { :gat => gat } 
+end
+    </pre>
+    </div>
+</div>

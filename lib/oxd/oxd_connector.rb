@@ -2,7 +2,7 @@ require 'socket'
 require 'ipaddr'
 
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.3
+# @note supports oxd-version 2.4.4
 module Oxd
 
 	# A class which takes care of the socket communication with oxD Server.
@@ -24,7 +24,7 @@ module Oxd
 
 	    # Checks the validity of command that is to be passed to oxd-server
 	    def validate_command
-	    	command_types = ['get_authorization_url','update_site_registration', 'get_tokens_by_code','get_user_info', 'register_site', 'get_logout_uri','get_authorization_code']
+	    	command_types = ['get_authorization_url','update_site_registration', 'get_tokens_by_code','get_user_info', 'register_site', 'get_logout_uri','get_authorization_code','uma_rs_protect','uma_rs_check_access','uma_rp_get_rpt','uma_rp_authorize_rpt','uma_rp_get_gat']
 	    	if (!command_types.include?(@command))
 				logger(:log_msg => "Command: #{@command} does not exist! Exiting process.")
         	end
@@ -86,6 +86,11 @@ module Oxd
 	        	logger(:log_msg => "Response is empty. Exiting process.")
 	        end
 	        return @response_object
+	    end
+
+		# @return [Mixed] @response_object set by request method
+	    def getResponseObject
+	    	return @response_object
 	    end
 
 	    # extracts 'data' parameter from @response_object

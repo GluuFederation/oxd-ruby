@@ -6,7 +6,7 @@ Oxd.configure do |config|
 	config.authorization_redirect_uri 			= "https://client.example.com/login"
 	config.logout_redirect_uri 		  			= "https://client.example.com/logout"
 	config.post_logout_redirect_uri	  			= "https://client.example.com/"
-	config.scope					  			= [ "openid", "profile" ]
+	config.scope					  			= ["openid","profile","uma_protection","uma_authorization"]
 	config.application_type       	  			= "web"
 	config.redirect_uris     		  			= ["https://client.example.com/login"]
 	config.client_jwks_uri			  			= ""
