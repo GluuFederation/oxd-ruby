@@ -129,13 +129,6 @@ To protect resources with UMA Resource server, you need to add resources to libr
 @uma_command.uma_rs_protect
 ```
 
-### Get Requesting Party Token(RPT)
-To gain access to protected resources at the UMA resource server, you must first obtain RPT.
-
-```ruby
-@uma_command.uma_rp_get_rpt(force_new)
-```
-
 ### UMA Check access for a particular resource
 To check wether you have access to a particular resource on UMA Resource Sevrer or not, use following method:
 
@@ -143,6 +136,13 @@ To check wether you have access to a particular resource on UMA Resource Sevrer 
 @uma_command.uma_rs_check_access(path, http_method)
 ```
 You must first get RPT before calling this method.
+
+### Get Requesting Party Token(RPT)
+To gain access to protected resources at the UMA resource server, you must first obtain RPT.
+
+```ruby
+@uma_command.uma_rp_get_rpt(force_new)
+```
 
 ### Authorize RPT
 You must first call `uma_rp_get_rpt` and `uma_rs_check_access` methods before authorizing RPT. If you have already obtained the RPT, use `uma_rp_authorize_rpt` method provided by oxd-ruby library to authorize it.
