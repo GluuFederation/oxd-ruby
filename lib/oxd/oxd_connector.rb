@@ -16,7 +16,7 @@ module Oxd
 	    	@data = Hash.new
 	    	@params = Hash.new
 	    	@response_data = Hash.new
-	    	@configuration = Oxd.config			
+	    	@configuration = Oxd.config		    	
 			logger(:log_msg => "Problem with json data : authorization_redirect_uri can't be blank") if @configuration.authorization_redirect_uri.empty?
 			logger(:log_msg => "#{@configuration.oxd_host_ip} is not a valid IP address") if (IPAddr.new(@configuration.oxd_host_ip) rescue nil).nil?
 			logger(:log_msg => "#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535") if (!@configuration.oxd_host_port.is_a?(Integer) || (@configuration.oxd_host_port < 0 && @configuration.oxd_host_port > 65535))	
@@ -61,6 +61,8 @@ module Oxd
 		# method to send commands to the oxD server and to recieve the response via {#oxd_socket_request}
 		# @return [JSON] @response_object : response from the oxd server in JSON form
 	    def request
+	    	uri = URI.parse(@configuration.authorization_redirect_uri)	
+			logger(:log_msg => "Please enable SSL on your website or check URIs in Oxd configuration.") if (uri.scheme != 'https')
 	    	validate_command
 	    	jsondata = getData.to_json
 	    	if(!is_json? (jsondata))

@@ -17,12 +17,14 @@ Ruby Client Library for the [Gluu oxD Server RP - v2.4.4](https://www.gluu.org/d
 
 Oxd-server needs to be running on your machine to connect with OP.
 
+* Enable SSL on your website otherwise this library will not work.
+
 ### Installation
 
 To install gem, add this line to your application's Gemfile:
 
 ```ruby
-gem 'oxd-ruby', '~> 0.1.4'
+gem 'oxd-ruby', '~> 0.1.5'
 ```
 
 Run bundle command to install it:
