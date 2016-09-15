@@ -65,20 +65,20 @@ protected
 ```
 
 The `ClientOxdCommands` class of the library provides all the methods required for the website to communicate with the oxD RP through sockets.
-The `UMACommands` class provides commands for UMA Resource Server(UMA RS) and UMA Requesting Party(UMA RP).
+The `UMACommands` class provides commands for UMA Resource Server(UMA RS) and UMA Requesting Party(UMA RP) protocol.
 
 ### Website Registration
 
-The website can be registered with the OP using the `@oxd_command.register_site` call.
+The website can be registered with the OpenId Provider using the `@oxd_command.register_site` call.
 
 ### Get Authorization URL
 
-The first step is to generate an authorization url which the user can visit to authorize your application to use the information from the OP.
+The first step is to generate an authorization url which the user can visit to authorize your application to use the information from the OpenId Provider.
 
 ```ruby
 authorization_url = @oxd_command.get_authorization_url
 ```
-Using the above url the website can redirect the user for authentication at the OP.
+Using the above url the website can redirect the user for authentication at the OpenId Provider.
 
 ### Get access token
 
@@ -92,7 +92,7 @@ The values for code are parsed from the callback url query parameters.
 
 ### Get user claims
 
-Claims (user information fields) made availble by the OP can be fetched using the access token obtained above.
+Claims (user information fields) made availble by the OpenId Provider can be fetched using the access token obtained above.
 
 ```ruby
 user = @oxd_command.get_user_info(access_token)
@@ -100,14 +100,14 @@ user = @oxd_command.get_user_info(access_token)
 
 ### Using the claims
 
-Once the user data is obtained, the various claims supported by the OP can be used as required.
+Once the user data is obtained, the various claims supported by the OpenId Provider can be used as required.
 
 ```ruby
 <% user.each do |field,value| %>
 	<%= "#{field} : #{value}" %>
 <% end %>
 ```
-The availability of various claims are completely dependent on the OP.
+The availability of various claims are completely dependent on the OpenId Provider.
 
 ### Logging out
 
