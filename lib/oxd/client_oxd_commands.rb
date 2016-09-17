@@ -25,12 +25,7 @@ module Oxd
 					"op_host" => @configuration.op_host,
 		        	"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
 		            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
-<<<<<<< HEAD
 		            "application_type" => @configuration.application_type,		            
-=======
-		            "application_type" => @configuration.application_type,
-		            "redirect_uris" => @configuration.redirect_uris,
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
 		            "acr_values" => @configuration.acr_values,
 		            "scope" => @configuration.scope,
 		            "client_jwks_uri" => @configuration.client_jwks_uri,
@@ -39,13 +34,9 @@ module Oxd
 		            "contacts" => @configuration.contacts,
 		            "grant_types" => @configuration.grant_types,
 		            "response_types"=> @configuration.response_types,
-<<<<<<< HEAD
 		            "client_logout_uris"=> @configuration.client_logout_uris,
 		            "client_secret"=> @configuration.client_secret,
 		            "client_id"=> @configuration.client_id
-=======
-		            "client_logout_uris"=> @configuration.client_logout_uris
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
 		        }
 		        request
 		        @configuration.oxd_id = getResponseData['oxd_id']
@@ -64,10 +55,7 @@ module Oxd
 			@command = 'get_authorization_url'
 			@params = {
 	            "oxd_id" => @configuration.oxd_id,
-<<<<<<< HEAD
 	            "prompt" => @configuration.prompt,
-=======
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
 	            "acr_values" => acr_values || @configuration.acr_values
         	}
 		    request
@@ -75,32 +63,16 @@ module Oxd
 		end
 
 		# @param code [String] code obtained from the authorization url callback
-<<<<<<< HEAD
-		# @param state [String] state key obtained from the authorization url callback
 		# @return [Hash] {:access_token, :id_token}
 		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
 		def get_tokens_by_code( code)
             if (code.empty?)
             	logger(:log_msg => "Empty/Wrong value in place of code.")
-=======
-		# @param scopes [Array] scopes authorized by the OP, obtained from the authorization url callback
-		# @param state [String] state key obtained from the authorization url callback
-		# @return [Hash] {:access_token, :id_token}
-		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
-		def get_tokens_by_code( code, scopes, state = nil)
-            if (code.empty? || scopes.empty? || (!scopes.kind_of? Array))
-            	logger(:log_msg => "Empty/Wrong value in place of code or scope.")
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
         	end
 			@command = 'get_tokens_by_code'
 			@params = {
 	            "oxd_id" => @configuration.oxd_id,
 	            "code" => code,
-<<<<<<< HEAD
-=======
-	            "scopes" => scopes,
-	            "state" => state
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
         	}        	
 			request
 			getResponseData['access_token']
@@ -151,11 +123,6 @@ module Oxd
 	        	"oxd_id" => @configuration.oxd_id,
 	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
 	            "application_type" => @configuration.application_type,
-<<<<<<< HEAD
-	            
-=======
-	            "redirect_uris" => @configuration.redirect_uris,
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
 	            "acr_values" => @configuration.acr_values,
 	            "scope" => @configuration.scope,
 	            "client_jwks_uri" => @configuration.client_jwks_uri,
@@ -164,10 +131,7 @@ module Oxd
 	            "contacts" => @configuration.contacts,
 	            "grant_types" => @configuration.grant_types,
 	            "response_types"=> @configuration.response_types,
-<<<<<<< HEAD
 	            "client_secret_expires_at" => 3080736637943,
-=======
->>>>>>> 48c53d8428e34c28a2c857563fdbb1a603ab06b6
 	            "client_logout_uris"=> @configuration.client_logout_uris
 	        }
 	        request
