@@ -1,7 +1,7 @@
 # Oxd Ruby
 [![Gem Version](https://badge.fury.io/rb/oxd-ruby.png)](https://badge.fury.io/rb/oxd-ruby)
 
-Ruby Client Library for the [Gluu oxD Server RP - v2.4.4](https://www.gluu.org/docs-oxd/).
+Ruby Client Library for the [Gluu oxD Server RP - v2.4.4 to v3.0.1](https://www.gluu.org/docs-oxd/).
 
 **oxdruby** is a thin wrapper around the communication protocol of oxD server. This can be used to access the OpenID connect & UMA Authorization end points of the Gluu Server via the oxD RP. This library provides the function calls required by a website to access user information from a OpenID Connect Provider (OP) by using the OxD as the Relying Party (RP).
 
@@ -24,7 +24,7 @@ Oxd-server needs to be running on your machine to connect with OP.
 To install gem, add this line to your application's Gemfile:
 
 ```ruby
-gem 'oxd-ruby', '~> 0.1.6'
+gem 'oxd-ruby', '~> 0.1.7'
 ```
 
 Run bundle command to install it:
@@ -86,7 +86,8 @@ The website needs to parse the information from the callback url and pass it on 
 
 ```ruby
 code = params[:code]
-access_token = @oxd_command.get_tokens_by_code( code )
+state = params[:state]
+access_token = @oxd_command.get_tokens_by_code( code,state )
 ```
 The values for code are parsed from the callback url query parameters.
 
@@ -114,7 +115,7 @@ The availability of various claims are completely dependent on the OpenId Provid
 Once the required work is done the user can be logged out of the system.
 
 ```ruby
-logout_uri = @oxd_command.get_logout_uri(access_token, state, session_state)
+logout_uri = @oxd_command.get_logout_uri(state, session_state)
 ```
 You can then redirect the user to obtained url to perform logout.
 

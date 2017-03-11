@@ -42,6 +42,7 @@ module Oxd
     config_accessor :client_token_endpoint_auth_method
     config_accessor :client_request_uris
     config_accessor :scope
+    config_accessor :id_token
     config_accessor :contacts
     config_accessor :response_types
     config_accessor :oxd_id
@@ -95,5 +96,6 @@ module Oxd
   	config.contacts = ["example-email@gmail.com"]
   	config.response_types = ["code"]
     config.oxd_id = ""
+    config.id_token = ""
   end 
 end

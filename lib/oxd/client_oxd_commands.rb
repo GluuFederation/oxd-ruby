@@ -63,9 +63,10 @@ module Oxd
 		end
 
 		# @param code [String] code obtained from the authorization url callback
+		# @param state [String] state obtained from the authorization url callback
 		# @return [Hash] {:access_token, :id_token}
 		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
-		def get_tokens_by_code( code)
+		def get_tokens_by_code( code,state )
             if (code.empty?)
             	logger(:log_msg => "Empty/Wrong value in place of code.")
         	end
@@ -73,8 +74,10 @@ module Oxd
 			@params = {
 	            "oxd_id" => @configuration.oxd_id,
 	            "code" => code,
+	            "state" => state
         	}        	
 			request
+			@configuration.id_token = getResponseData['id_token']
 			getResponseData['access_token']
 		end
 
@@ -93,17 +96,16 @@ module Oxd
         	request
 			getResponseData['claims']
 		end
-
-		# @param id_token [String] REQUIRED, oxd server will use last used id_token		
+	
 		# @param state [String] OPTIONAL, website state obtained from the authorization url callback
 		# @param session_state [String] OPTIONAL, session state obtained from the authorization url callback
 		# @return [String] uri
 		# method to retrieve logout url from OP. User must be redirected to this url to perform logout
-		def get_logout_uri(access_token, state = nil, session_state = nil)
+		def get_logout_uri( state = nil, session_state = nil)
 			@command = 'get_logout_uri'
 			@params = {
 	            "oxd_id" => @configuration.oxd_id,
-	            "id_token_hint" => access_token,	            
+	            "id_token_hint" => @configuration.id_token,
 	            "post_logout_redirect_uri" => @configuration.post_logout_redirect_uri, 
 	            "state" => state,
 	            "session_state" => session_state

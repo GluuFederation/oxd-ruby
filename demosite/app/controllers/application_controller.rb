@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
  	before_filter :set_oxd_commands_instance
 	protected
 		def set_oxd_commands_instance
-			@oxd_command = Oxd::ClientOxdCommands.new
+      @oxd_command = Oxd::ClientOxdCommands.new
+			@uma_command = Oxd::UMACommands.new
 		end  
 end

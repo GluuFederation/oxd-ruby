@@ -74,7 +74,7 @@ module Oxd
 	        else
 	            length = length <= 999 ? sprintf('0%d', length) : length
 	        end
-	        @response_json = oxd_socket_request((length + jsondata).encode("UTF-8"))
+	        @response_json = oxd_socket_request((length.to_s + jsondata).encode("UTF-8"))
 	        @response_json.sub!(@response_json[0..3], "")
 
 	        if (@response_json)

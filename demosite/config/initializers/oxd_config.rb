@@ -6,7 +6,7 @@ Oxd.configure do |config|
 	config.authorization_redirect_uri 			= "https://oxd-rails.com/login"
 	config.logout_redirect_uri 		  			= "https://oxd-rails.com/logout"
 	config.post_logout_redirect_uri	  			= "https://oxd-rails.com/"
-	config.scope					  			= [ "openid", "profile" ]
+	config.scope					  			= [ "openid", "profile","uma_protection","uma_authorization" ]
 	config.application_type       	  			= "web"
 	config.client_jwks_uri			  			= ""
 	config.client_token_endpoint_auth_method	= ""

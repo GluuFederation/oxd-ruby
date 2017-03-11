@@ -11,8 +11,8 @@ class UmaController < ApplicationController
 
         condition1_for_path2 = {:httpMethods => ["GET"], :scopes => ["http://photoz.example.com/dev/actions/view"]}
 
-        @uma_command.uma_add_resource("/photo", condition1_for_path1, condition2_for_path1) # Add Resouyrece#1
-        @uma_command.uma_add_resource("/document", condition1_for_path2) # Add Resouyrece#2
+        @uma_command.uma_add_resource("/photo", condition1_for_path1, condition2_for_path1) # Add Resource#1
+        @uma_command.uma_add_resource("/document", condition1_for_path2) # Add Resource#2
         response = @uma_command.uma_rs_protect # Register above resources with UMA RS
         render :template => "uma/index", :locals => { :protect_resources_response => response } 
     end
