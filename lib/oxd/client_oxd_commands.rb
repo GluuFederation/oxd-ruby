@@ -38,7 +38,7 @@ module Oxd
 		            "client_secret"=> @configuration.client_secret,
 		            "client_id"=> @configuration.client_id
 		        }
-		        request
+		        request('register-site')
 		        @configuration.oxd_id = getResponseData['oxd_id']
 		    end	        
 		end
@@ -58,7 +58,7 @@ module Oxd
 	            "prompt" => @configuration.prompt,
 	            "acr_values" => acr_values || @configuration.acr_values
         	}
-		    request
+		    request('get-authorization-url')
 		    getResponseData['authorization_url']
 		end
 
@@ -76,7 +76,7 @@ module Oxd
 	            "code" => code,
 	            "state" => state
         	}        	
-			request
+			request('get-tokens-by-code')
 			@configuration.id_token = getResponseData['id_token']
 			getResponseData['access_token']
 		end
@@ -93,7 +93,7 @@ module Oxd
 	            "oxd_id" => @configuration.oxd_id,
 	            "access_token" => access_token
         	}
-        	request
+        	request('get-user-info')
 			getResponseData['claims']
 		end
 	
@@ -110,7 +110,7 @@ module Oxd
 	            "state" => state,
 	            "session_state" => session_state
         	}
-        	request
+        	request('logout')
         	getResponseData['uri']
         	#@configuration.oxd_id = "" #unset oxd_id after logout
 		end
@@ -136,7 +136,7 @@ module Oxd
 	            "client_secret_expires_at" => 3080736637943,
 	            "client_logout_uris"=> @configuration.client_logout_uris
 	        }
-	        request
+	        request('update-site-registration')
 	        if @response_object['status'] == "ok"
 	        	@configuration.oxd_id = getResponseData['oxd_id']
 	            return true

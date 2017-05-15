@@ -1,5 +1,8 @@
 require 'socket'
 require 'ipaddr'
+require 'net/http'
+require 'json'
+require 'uri'
 
 # @author Inderpal Singh
 # @note supports oxd-version 2.4.4
@@ -55,38 +58,64 @@ module Oxd
 	        if(socket.close)
 	        	logger(:log_msg => "Client: oxd_socket_connection : disconnected.", :error => "")
 	        end
+	        #logger(:log_msg => response)
+			#abort
 	        return response
+		end
+		
+		def oxd_http_request(requst, command = "")
+			#logger(:log_msg => "Here is the command: #{command}", :error => "")
+			uri = URI.parse("https://127.0.0.1/"+command)
+			http = Net::HTTP.new("127.0.0.1", 8443)
+			http.use_ssl = true
+			http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+			request = Net::HTTP::Post.new(uri.request_uri)
+			request.add_field('Content-Type', 'application/json')
+			request.body = requst
+			response = http.request(request)
+			response2 = response.body
+			return response2
 		end
 
 		# method to send commands to the oxD server and to recieve the response via {#oxd_socket_request}
 		# @return [JSON] @response_object : response from the oxd server in JSON form
-	    def request
+	    def request(comm = "")
+			
 	    	uri = URI.parse(@configuration.authorization_redirect_uri)	
 			logger(:log_msg => "Please enable SSL on your website or check URIs in Oxd configuration.") if (uri.scheme != 'https')
 	    	validate_command
-	    	jsondata = getData.to_json
-	    	if(!is_json? (jsondata))
-	    		logger(:log_msg => "Sending parameters must be JSON. Exiting process.")
-	        end
-	        length = jsondata.length
-	        if( length <= 0 )
-	    		logger(:log_msg => "JSON data length must be more than zero. Exiting process.")
+	    	
+	    	if(@configuration.oxd_host_port == 8099)
+				jsondata = getData.to_json
+				if(!is_json? (jsondata))
+					logger(:log_msg => "Sending parameters must be JSON. Exiting process.")
+				end
+				length = jsondata.length
+				if( length <= 0 )
+					logger(:log_msg => "JSON data length must be more than zero. Exiting process.")
+				else
+					length = length <= 999 ? sprintf('0%d', length) : length
+				end
+				@response_json = oxd_socket_request((length.to_s + jsondata).encode("UTF-8"))
+				@response_json.sub!(@response_json[0..3], "")
 	        else
-	            length = length <= 999 ? sprintf('0%d', length) : length
+				jsondata = getData2.to_json
+				@response_json = oxd_http_request(jsondata, comm)
 	        end
-	        @response_json = oxd_socket_request((length.to_s + jsondata).encode("UTF-8"))
-	        @response_json.sub!(@response_json[0..3], "")
+
 
 	        if (@response_json)
 	            response = JSON.parse(@response_json)
 	            if (response['status'] == 'error') 
 	    			logger(:log_msg => "OxD Server Error : #{response['data']['error_description']}")
-	            elsif (response['status'] == 'ok') 
+	            elsif (response['status'] == 'ok')
+					
 	                @response_object = JSON.parse(@response_json)
 	            end
 	        else
 	        	logger(:log_msg => "Response is empty. Exiting process.")
 	        end
+	        
 	        return @response_object
 	    end
 
@@ -110,6 +139,11 @@ module Oxd
 	    # @return [Array] @data
 	    def getData
 	    	@data = {'command' => @command, 'params' => @params}
+        	return @data
+	    end
+	    
+	    def getData2
+	    	@data = @params
         	return @data
 	    end
 
