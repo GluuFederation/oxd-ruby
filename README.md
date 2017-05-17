@@ -24,7 +24,7 @@ Oxd-server needs to be running on your machine to connect with OP.
 To install gem, add this line to your application's Gemfile:
 
 ```ruby
-gem 'oxd-ruby', '~> 0.1.7'
+gem 'oxd-ruby', '~> 0.1.8'
 ```
 
 Run bundle command to install it:

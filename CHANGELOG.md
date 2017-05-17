@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.1.8] - 2017-05-16
+### Added
+- support for oxd-to-http
+
 ## [0.1.7] - 2017-03-10
 ### Added
 - `state` parameter in `get_tokens_by_code` command

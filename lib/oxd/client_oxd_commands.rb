@@ -16,6 +16,7 @@ module Oxd
 
 		# @return [String] oxd_id of the registered website
 		# method to register the website and generate a unique ID for that website
+		# works with both oxd-to-http and oxd-server
 		def register_site			
 			if(!@configuration.oxd_id.empty?) # Check if client is already registered
 				return @configuration.oxd_id
@@ -51,6 +52,7 @@ module Oxd
 		# @param acr_values [Array] OPTIONAL, list of acr values in the order of priority
 		# @return [String] authorization_url
 		# method to get authorization url that the user must be redirected to for authorization and authentication
+		# works with both oxd-to-http and oxd-server
 		def get_authorization_url(acr_values = [""])
 			@command = 'get_authorization_url'
 			@params = {
@@ -66,6 +68,7 @@ module Oxd
 		# @param state [String] state obtained from the authorization url callback
 		# @return [Hash] {:access_token, :id_token}
 		# method to retrieve access token. It is called after the user authorizes by visiting the authorization url.
+		# works with both oxd-to-http and oxd-server
 		def get_tokens_by_code( code,state )
             if (code.empty?)
             	logger(:log_msg => "Empty/Wrong value in place of code.")
@@ -84,6 +87,7 @@ module Oxd
 		# @param access_token [String] access token recieved from the get_tokens_by_code command
 		# @return [String] user data claims that are returned by the OP
 		# get the information about the user using the access token obtained from the OP
+		# works with both oxd-to-http and oxd-server
 		def get_user_info(access_token)
 			if access_token.empty?
 	            logger(:log_msg => "Empty access code sent for get_user_info", :error => "Empty access code")
@@ -101,6 +105,7 @@ module Oxd
 		# @param session_state [String] OPTIONAL, session state obtained from the authorization url callback
 		# @return [String] uri
 		# method to retrieve logout url from OP. User must be redirected to this url to perform logout
+		# works with both oxd-to-http and oxd-server
 		def get_logout_uri( state = nil, session_state = nil)
 			@command = 'get_logout_uri'
 			@params = {
@@ -118,6 +123,7 @@ module Oxd
 		# @return [Boolean] status - if site registration was updated successfully or not
 		# method to update the website's information with OpenID Provider. 
 		# 	This should be called after changing the values in the oxd_config file.
+		# works with both oxd-to-http and oxd-server
 		def update_site_registration
 	    	@command = 'update_site_registration'
         	@params = {

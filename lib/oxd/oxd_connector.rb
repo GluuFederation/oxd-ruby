@@ -63,8 +63,11 @@ module Oxd
 	        return response
 		end
 		
+		# method to communicate with the oxD-to-http server
+		# @param request [JSON] representation of the JSON command string
+		# @param char_count [Integer] number of characters to read from response
+		# @return response from the oxD-to-http server
 		def oxd_http_request(requst, command = "")
-			#logger(:log_msg => "Here is the command: #{command}", :error => "")
 			uri = URI.parse("https://127.0.0.1/"+command)
 			http = Net::HTTP.new("127.0.0.1", 8443)
 			http.use_ssl = true
@@ -77,7 +80,8 @@ module Oxd
 			return response2
 		end
 
-		# method to send commands to the oxD server and to recieve the response via {#oxd_socket_request}
+		# @param comm [String] command string for oxd-to-http
+		# method to send commands to the oxD server and oxd-to-http and to recieve the response via {#oxd_socket_request}
 		# @return [JSON] @response_object : response from the oxd server in JSON form
 	    def request(comm = "")
 			
