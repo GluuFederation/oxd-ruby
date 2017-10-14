@@ -5,7 +5,7 @@ require 'json'
 require 'uri'
 
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.4
+# @note supports oxd-version 3.1.1
 module Oxd
 
 	# A class which takes care of the socket communication with oxD Server.
@@ -19,7 +19,8 @@ module Oxd
 	    	@data = Hash.new
 	    	@params = Hash.new
 	    	@response_data = Hash.new
-	    	@configuration = Oxd.config		    	
+	    	@configuration = Oxd.config
+
 			logger(:log_msg => "Problem with json data : authorization_redirect_uri can't be blank") if @configuration.authorization_redirect_uri.empty?
 			logger(:log_msg => "#{@configuration.oxd_host_ip} is not a valid IP address") if (IPAddr.new(@configuration.oxd_host_ip) rescue nil).nil?
 			logger(:log_msg => "#{@configuration.oxd_host_port} is not a valid port for socket. Port must be integer and between from 0 to 65535") if (!@configuration.oxd_host_port.is_a?(Integer) || (@configuration.oxd_host_port < 0 && @configuration.oxd_host_port > 65535))	
@@ -27,7 +28,7 @@ module Oxd
 
 	    # Checks the validity of command that is to be passed to oxd-server
 	    def validate_command
-	    	command_types = ['get_authorization_url','update_site_registration', 'get_tokens_by_code','get_user_info', 'register_site', 'get_logout_uri','get_authorization_code','uma_rs_protect','uma_rs_check_access','uma_rp_get_rpt','uma_rp_authorize_rpt','uma_rp_get_gat']
+	    	command_types = ['setup_client', 'get_client_token', 'get_authorization_url','update_site_registration','get_tokens_by_code','get_access_token_by_refresh_token', 'get_user_info', 'register_site', 'get_logout_uri','get_authorization_code','uma_rs_protect','uma_rs_check_access','uma_rp_get_rpt','uma_rp_get_claims_gathering_url']
 	    	if (!command_types.include?(@command))
 				logger(:log_msg => "Command: #{@command} does not exist! Exiting process.")
         	end
@@ -64,19 +65,25 @@ module Oxd
 		end
 		
 		# method to communicate with the oxD-to-http server
-		# @param request [JSON] representation of the JSON command string
-		# @param char_count [Integer] number of characters to read from response
+		# @param request_params [JSON] representation of the JSON command string
 		# @return response from the oxD-to-http server
-		def oxd_http_request(requst, command = "")
+		def oxd_http_request(request_params, command = "")
 			uri = URI.parse("https://127.0.0.1/"+command)
 			http = Net::HTTP.new("127.0.0.1", 8443)
 			http.use_ssl = true
 			http.verify_mode = OpenSSL::SSL::VERIFY_NONE
 			request = Net::HTTP::Post.new(uri.request_uri)
+
 			request.add_field('Content-Type', 'application/json')
-			request.body = requst
+
+			if(@configuration.protection_access_token.present?)
+				request.add_field('Authorization','Bearer '+@configuration.protection_access_token)
+			end
+			request.body = request_params
+			logger(:log_msg => "Sending oxd_http_request command #{command} with data #{request_params.inspect}", :error => "")
 			response = http.request(request)
 			response2 = response.body
+			logger(:log_msg => "oxd_http_request response #{response2}", :error => "")
 			return response2
 		end
 
@@ -89,7 +96,7 @@ module Oxd
 			logger(:log_msg => "Please enable SSL on your website or check URIs in Oxd configuration.") if (uri.scheme != 'https')
 	    	validate_command
 	    	
-	    	if(@configuration.oxd_host_port == 8099)
+	    	if(@configuration.connection_type == 'local')
 				jsondata = getData.to_json
 				if(!is_json? (jsondata))
 					logger(:log_msg => "Sending parameters must be JSON. Exiting process.")
@@ -163,8 +170,7 @@ module Oxd
  		end
 
  		# Logs server response and errors to log file
- 		# @param log_msg [Hash] response to print in log file
- 		# @param error [Hash] error message to print in log file
+ 		# @param args [Hash] {:log_msg, :error} response to print in log file and raise error
  		# @raise RuntimeError
  		def logger(args={})
  			# Initialize Log file

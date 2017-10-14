@@ -1,29 +1,56 @@
 class HomeController < ApplicationController
-	skip_before_filter :verify_authenticity_token  
+	skip_before_filter :verify_authenticity_token
 
-	def index	
+	def index		
+	end
+
+	def setup_client
+		unless(@oxdConfig.oxd_id.present?)			
+			check_openid_type(@oxdConfig.op_host)
+
+			if(@oxdConfig.dynamic_registration == false && (@oxdConfig.client_id.nil? && @oxdConfig.client_secret.nil?))				
+				flash[:info] = 'Enter client ID and client Secret in oxd_config.rb file'
+			else
+				@oxd_command.setup_client
+			end			
+		end
+		flash[:success] = 'Client is registered with Oxd ID : '+@oxdConfig.oxd_id
+		redirect_to root_path
 	end
 
 	def register_site		
-		if(!@oxd_command.getOxdId.present?)			
+		if(!@oxdConfig.oxd_id.present?)			
 			@oxd_command.register_site # Register site and store the returned oxd_id in config
-	    end
+	    end	    
+	    @oxd_command.get_client_token # Fetch protection_access_token
 	    authorization_url = @oxd_command.get_authorization_url
 	    redirect_to authorization_url # redirect user to obtained authorization_url to authenticate
 	end
 
 	def login
-		if(@oxd_command.getOxdId.present?)
+		if(@oxdConfig.oxd_id.present?)
 			if (params[:code].present?)
 				# pass the parameters obtained from callback url to get access_token
 				@access_token = @oxd_command.get_tokens_by_code( params[:code], params[:state]) 
     		end
 	        session.delete('oxd_access_token') if(session[:oxd_access_token].present?)
+
+	        if(@oxdConfig.dynamic_registration == true)
+	        	@access_token = @oxd_command.get_access_token_by_refresh_token
+	        end
         	session[:oxd_access_token] = @access_token
         	session[:state] = params[:state]
         	session[:session_state] = params[:session_state]
 			@user = @oxd_command.get_user_info(session[:oxd_access_token]) # pass access_token get user information from OP
 			render :template => "home/index", :locals => { :user => @user }				
+		end
+	end
+
+	def update_registration
+		if(@oxd_command.update_site_registration)
+			flash[:success] = 'Client settings are updated successfully!!'
+		else
+			flash[:error] = 'There was some error in updating Client settings'
 		end
 	end
 

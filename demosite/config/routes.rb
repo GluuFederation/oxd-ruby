@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   root 'home#index'
+  get '/setup_client' => 'home#setup_client'
   get '/register_site' => 'home#register_site'
   get '/login' => 'home#login'
   get '/logout' => 'home#logout'
@@ -10,8 +11,7 @@ Rails.application.routes.draw do
       get 'protect_resources'
       get 'get_rpt'
       get 'check_access'
-      get 'authorize_rpt'
-      get 'get_gat'
+      get 'get_claims_gathering_url'
     end
   end
   

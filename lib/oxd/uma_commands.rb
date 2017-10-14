@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.4
+# @note supports oxd-version 3.1.1
 module Oxd
 
 	require 'json'
@@ -21,8 +21,8 @@ module Oxd
 		#   condition2 = {:httpMethods => ["PUT", "POST"], :scopes => ["http://photoz.example.com/dev/actions/all","http://photoz.example.com/dev/actions/add"],:ticketScopes => ["http://photoz.example.com/dev/actions/add"]}
 		#   uma_add_resource("/photo", condition1, condition2)
 		# combines multiple resources into @resources array to pass to uma_rs_protect method
-		def uma_add_resource(path, *conditions)
-		    @resources.push({:path => path, :conditions => conditions})
+		def uma_add_resource(path, *conditions)			
+		    @resources.push({:path => path, :conditions => conditions})			
 		end
 
 		# @return [STRING] oxd_id
@@ -30,28 +30,45 @@ module Oxd
 		# method to protect resources with UMA resource server
 		def uma_rs_protect
 			logger(:log_msg => "Please set resources with uma_add_resource(path, *conditions) method first.") if(@resources.nil?)
+			logger(:log_msg => "UMA configuration #{@configuration}", :error => '')
 			@command = 'uma_rs_protect'
 			@params = {
 				"oxd_id" => @configuration.oxd_id,
-				"resources" => @resources
+				"resources" => @resources,
+				"protection_access_token" => @configuration.protection_access_token
 			}
-	        request
+	        request('uma-rs-protect')
 	        getResponseData['oxd_id']
 		end
 
-		# @param force_new [BOOLEAN] REQUIRED
-		# @return [STRING] RPT
-		# @raise RuntimeError if force_new param is not boolean
+		# @param claim_token [STRING] OPTIONAL
+		# @param claim_token_format [STRING] OPTIONAL
+		# @param pct [STRING] OPTIONAL
+		# @param rpt [STRING] OPTIONAL
+		# @param scope [STRING] OPTIONAL
+		# @param state [STRING] OPTIONAL, state that is returned from uma_rp_get_claims_gathering_url command
+		# @return [Hash] response data (access_token, token_type, pct, upgraded)
 		# method for obtaining RPT to gain access to protected resources at the UMA resource server
-		def uma_rp_get_rpt(force_new) 
-			logger(:log_msg => "Wrong value for force_new param. #{force_new.kind_of?(TrueClass)}") if(force_new.kind_of?(TrueClass) || force_new.kind_of?(FalseClass))
+		def uma_rp_get_rpt( claim_token = nil, claim_token_format = nil, pct = nil, rpt = nil, scope = nil, state = nil )
 			@command = 'uma_rp_get_rpt'
 			@params = {
 				"oxd_id" => @configuration.oxd_id,
-				"force_new" => force_new
+				"ticket" => @configuration.ticket,
+				"claim_token" => claim_token,
+				"claim_token_format" => claim_token_format,
+				"pct" => pct,
+				"rpt" => (!rpt.nil?)? rpt : @configuration.rpt,
+				"scope" => scope,
+				"state" => state,
+				"protection_access_token" => @configuration.protection_access_token
 	        }
-	        request
-	        @configuration.rpt = getResponseData['rpt']
+	        request('uma-rp-get-rpt')
+	        
+	        if getResponseData['error'] == 'need_info' && !getResponseData['details']['ticket'].empty?
+	        	@configuration.ticket = getResponseData['details']['ticket']	        
+	        end
+
+	        getResponseData
 		end
 
 		# @param path [STRING] REQUIRED
@@ -67,47 +84,34 @@ module Oxd
 				"oxd_id" => @configuration.oxd_id,
 				"rpt" => @configuration.rpt,
 				"path" => path,
-				"http_method" => http_method
+				"http_method" => http_method,
+				"protection_access_token" => @configuration.protection_access_token
 	        }
-	        request
+	        request('uma-rs-check-access')
 	        if getResponseData['access'] == 'denied' && !getResponseData['ticket'].empty?
 	        	@configuration.ticket = getResponseData['ticket']
 	        elsif getResponseData['access'] == 'granted' 
 	        	@configuration.ticket = ""
 	        end
 	        getResponseData
-		end	
-
-		# @return [String] oxd_id 
-		# @note This method should always be called after uma_rp_get_rpt and uma_rs_check_access methods
-		# Method to authorize generated RPT using oxd_id and ticket.
-		def uma_rp_authorize_rpt
-			@command = 'uma_rp_authorize_rpt'
-			@params = {
-				"oxd_id" => @configuration.oxd_id,
-				"rpt" => @configuration.rpt,
-				"ticket" => @configuration.ticket
-	        }
-	        request
-	        getResponseData['oxd_id']
 		end
 
-		# @param scopes [Array] REQUIRED
-		# @return [String] rpt 
-		# @example
-		# 	scopes = ["http://photoz.example.com/dev/actions/add","http://photoz.example.com/dev/actions/view"]
-		# 	uma_rp_get_gat(scopes)
-		# method to obtain GAT (Gluu Access Token)
-		def uma_rp_get_gat(scopes)
-			logger(:log_msg => "Invalid value for scopes argument.") if(!scopes.kind_of? Array)
-			@command = 'uma_rp_get_gat'
+		# @param claims_redirect_uri [STRING] REQUIRED
+		# @return [Hash] response data (url, state)
+		# method to check if we have permission to access particular resource or not
+		def uma_rp_get_claims_gathering_url( claims_redirect_uri )
+			if (claims_redirect_uri.empty?)
+            	logger(:log_msg => "Empty/Wrong value in place of claims_redirect_uri.")
+        	end
+			@command = 'uma_rp_get_claims_gathering_url'
 			@params = {
 				"oxd_id" => @configuration.oxd_id,
-				"scopes" => scopes
+				"ticket" => @configuration.ticket,
+				"claims_redirect_uri" => claims_redirect_uri,
+				"protection_access_token" => @configuration.protection_access_token
 	        }
-	        request
-	        logger(:log_msg => "Invalid GAT recieved : #{getResponseData['rpt']}") if(!getResponseData['rpt'].match(/gat_/)[0])
-	        getResponseData['rpt']
-		end
+	        request('uma-rp-get-claims-gathering-url')	        
+	        getResponseData
+		end			
 	end
 end

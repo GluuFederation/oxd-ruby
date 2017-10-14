@@ -1,7 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [0.1.8] - 2017-05-16
+## [0.1.9] - 2017-10-11
+### Added
+- support for oxd-to-https
+- Introduced UMA 2 support
+- `client_name`, `client_sector_identifier_uri`, `ui_locales`, `claims_locales` and `protection_access_token` parameters to `register_site` command
+### Removed
+- `uma_rp_authorize_rpt` UMA command
+- `uma_rp_get_gat` UMA command
+
+## [0.1.9] - 2017-05-16
 ### Added
 - support for oxd-to-http
 
