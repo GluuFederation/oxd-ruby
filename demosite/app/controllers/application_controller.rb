@@ -27,7 +27,11 @@ class ApplicationController < ActionController::Base
   def check_openid_type(op_host)
     op_host = op_host+"/.well-known/openid-configuration"
     uri = URI.parse(op_host)
-    response = Net::HTTP.get_response(uri)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
     ophost_data = response.body
     @oxdConfig.dynamic_registration = (!JSON.parse(ophost_data).key?("registration_endpoint"))? false : true
     @oxdConfig.scope = ["openid", "profile", "email"] if(@oxdConfig.dynamic_registration == false)
