@@ -227,7 +227,7 @@ module Oxd
 				"post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
 				"client_logout_uris"=> @configuration.client_logout_uris,
 				"response_types"=> @configuration.response_types,
-				"grant_types" => @configuration.grant_types,
+				"grant_types" => ["authorization_code","client_credentials","uma_ticket"],
 				"scope" => @configuration.scope,
 				"acr_values" => @configuration.acr_values,
 				"client_name" => @configuration.client_name,
