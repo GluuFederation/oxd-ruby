@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :uma do
     collection do
       get 'protect_resources'
+      get 'get_client_token'
       get 'get_rpt'
       get 'check_access'
       get 'get_claims_gathering_url'

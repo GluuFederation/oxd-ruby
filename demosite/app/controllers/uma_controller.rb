@@ -2,7 +2,12 @@ class UmaController < ApplicationController
 	skip_before_filter :verify_authenticity_token  
 	require 'json'
 
-    def index        
+    def index       
+    end
+
+    def get_client_token
+        @oxd_command.get_client_token
+        redirect_to uma_index_path
     end
 
     def protect_resources

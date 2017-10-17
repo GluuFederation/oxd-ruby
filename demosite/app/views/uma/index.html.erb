@@ -3,6 +3,25 @@
 </div>
 <div class="row">
     <div class="col-md-6">
+        <h3>Get Client Token</h3>
+        <p><code>get_client_token</code> command must be invoked to use all other methods of API when the <code>protect_commands_with_access_token</code> is enabled in oxd-server.</p>
+        <hr>
+        <div class="alert alert-success">
+            Obtained protection access token is : <%= @oxdConfig.protection_access_token %>
+        </div>
+        <p><strong>Get Client Token Live demo - </strong><a class="btn btn-primary" href="<%= get_client_token_uma_index_path %>" >Get Client Token</a></p>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def get_client_token
+    @oxd_command.get_client_token
+    redirect_to uma_index_path
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
         <h3>UMA RS Protect resources</h3>
         <p>To protect resources with UMA RS, you need to add resources to library using <code>uma_add_resource(path, *conditions)</code> method. Then you can call <code>uma_rs_protect</code> method to register resources for protection with UMA RS.</p>
         <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=   protect_resources_uma_index_path  %>">Protect Resources</a></p>
