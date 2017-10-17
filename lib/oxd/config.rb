@@ -1,7 +1,7 @@
 require 'active_support/configurable'
 
 # @author Inderpal Singh
-# @note supports oxd-version 2.4.4
+# @note supports oxd-version 3.1.1
 module Oxd
 
   # Configures global settings for Oxd
@@ -26,28 +26,37 @@ module Oxd
   class Configuration
     include ActiveSupport::Configurable    
     config_accessor :oxd_host_ip
-    config_accessor :oxd_host_port
+    config_accessor :oxd_host_port    
     config_accessor :op_host
     config_accessor :client_id
     config_accessor :client_secret
-    config_accessor :application_type
-    config_accessor :prompt
+    config_accessor :client_name
     config_accessor :authorization_redirect_uri
-    config_accessor :post_logout_redirect_uri
-    config_accessor :client_logout_uris
     config_accessor :logout_redirect_uri
+    config_accessor :post_logout_redirect_uri
+    config_accessor :scope
     config_accessor :grant_types
+    config_accessor :application_type
+    config_accessor :response_types
     config_accessor :acr_values
     config_accessor :client_jwks_uri
     config_accessor :client_token_endpoint_auth_method
     config_accessor :client_request_uris
-    config_accessor :scope
-    config_accessor :id_token
     config_accessor :contacts
-    config_accessor :response_types
+    config_accessor :client_logout_uris
+    config_accessor :connection_type
+    config_accessor :oxd_host
+    config_accessor :dynamic_registration
+    config_accessor :prompt
+    config_accessor :id_token
+    config_accessor :refresh_token
     config_accessor :oxd_id
-    config_accessor :rpt
     config_accessor :ticket
+    config_accessor :rpt
+    config_accessor :client_sector_identifier_uri
+    config_accessor :ui_locales
+    config_accessor :claims_locales
+    config_accessor :protection_access_token
 
     # define param_name writer
     def param_name
@@ -92,10 +101,18 @@ module Oxd
   	config.client_jwks_uri = ""
   	config.client_token_endpoint_auth_method = ""
   	config.client_request_uris = []
-  	config.scope = ["openid", "profile","uma_protection","uma_authorization"]
+  	config.scope = ["openid", "profile", "email", "uma_protection","uma_authorization"]
   	config.contacts = ["example-email@gmail.com"]
   	config.response_types = ["code"]
     config.oxd_id = ""
     config.id_token = ""
+    config.client_name = ""
+    config.client_sector_identifier_uri = ""
+    config.ui_locales = []
+    config.claims_locales = []
+    config.protection_access_token = ""
+    config.oxd_host = ""
+    config.dynamic_registration = true
+    config.connection_type = 'local'
   end 
 end

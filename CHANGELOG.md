@@ -1,6 +1,19 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.1.9] - 2017-10-17
+### Added
+- support for oxd-to-https
+- Introduced UMA 2 support
+- `setup_client` command
+- `get_client_token` command
+- `get_access_token_by_refresh_token` command
+- `uma_rp_get_claims_gathering_url` UMA - RP command
+
+### Removed
+- `uma_rp_authorize_rpt` UMA command
+- `uma_rp_get_gat` UMA command
+
 ## [0.1.8] - 2017-05-16
 ### Added
 - support for oxd-to-http

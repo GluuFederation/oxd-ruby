@@ -39,23 +39,10 @@ describe UMACommands do
 
 	describe "#uma_rp_get_rpt" do
 		it 'returns rpt' do
-		    rpt = @uma_command.uma_rp_get_rpt('false')
+		    rpt = @uma_command.uma_rp_get_rpt
 		    expect(rpt).not_to be_nil
 		    expect(rpt).to eq(Oxd.config.rpt)
 		end
-
-		it 'raises error for invalid arguments' do
-			expect{ @uma_command.uma_rp_get_rpt('any string') }.to raise_error(RuntimeError)
-		end
-
-		it 'returns new rpt if force_new param is set to "true"' do
-			rpt = @uma_command.uma_rp_get_rpt('false')
-
-		    new_rpt = @uma_command.uma_rp_get_rpt('true')
-		    expect(new_rpt).not_to be_nil
-		    expect(new_rpt).to eq(Oxd.config.rpt)
-		    expect(new_rpt).not_to eq(rpt)
-		end		
 	end
 
 	describe "#uma_rs_check_access" do
@@ -76,28 +63,15 @@ describe UMACommands do
 		end
 	end
 
-	describe "#uma_rp_authorize_rpt" do
+	describe "#uma_rp_get_claims_gathering_url" do
 		it 'returns oxd_id' do
-		    oxd_id = @uma_command.uma_rp_authorize_rpt
-		    expect(oxd_id).not_to be_nil
-		    expect(oxd_id).to eq(Oxd.config.oxd_id)
+		    response = @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb')
+		    expect(response).to match(/claims_redirect_uri/)
 		end
 
 		it 'raises error if response has error' do
 			Oxd.config.ticket = 'ce2b9c5b-812b-40b6-98b4-28346c01db68'
-		    expect{ @uma_command.uma_rp_authorize_rpt }.to raise_error(RuntimeError)
-		end
-	end
-
-	describe "#uma_rp_get_gat" do
-		it 'returns gat' do
-			scopes = ["http://photoz.example.com/dev/actions/add","http://photoz.example.com/dev/actions/view","http://photoz.example.com/dev/actions/edit"]
-		    gat = @uma_command.uma_rp_get_gat(scopes)
-		end
-
-		it 'raises error when scopes is not an array' do
-		    # raise error when scopes is not an array
-		    expect{ @uma_command.uma_rp_get_gat('scopes') }.to raise_error(RuntimeError)
+		    expect{ @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb') }.to raise_error(RuntimeError)
 		end
 	end
 end

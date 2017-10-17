@@ -5,6 +5,22 @@ describe ClientOxdCommands do
 		@oxd_command = ClientOxdCommands.new
 	end
 
+	describe "#setup_client" do
+		it 'sets client_id, client_secret and oxd_id' do
+		    @oxd_command.setup_client
+		    expect(Oxd.config.client_id).not_to be_nil
+		    expect(Oxd.config.client_secret).not_to be_nil
+		    expect(Oxd.config.oxd_id).not_to be_nil
+		end
+	end
+
+	describe "#get_client_token" do
+		it 'returns protection_access_token' do
+		    @oxd_command.get_client_token
+		    expect(Oxd.config.protection_access_token).not_to be_nil
+		end
+	end
+
 	describe "#register_site" do
 		it 'returns oxd_id' do
 		    @oxd_command.register_site
@@ -12,10 +28,10 @@ describe ClientOxdCommands do
 		end
 	end
 
-	describe "#getOxdId" do
-		it 'returns saved oxd_id from configuration' do
-		    oxd_id = @oxd_command.getOxdId
-		    expect(oxd_id).not_to be_nil
+	describe "#oxdConfig" do
+		it 'returns configuration object' do
+		    oxdConfig = @oxd_command.oxdConfig
+		    expect(oxdConfig).to be_an_instance_of(Oxd::Configuration) 
 		end
 	end
 
@@ -33,22 +49,30 @@ describe ClientOxdCommands do
 	end
 	
 	describe "#get_tokens_by_code" do
+		#it 'raises error for invalid arguments' do
+			# Empty code should raise error		
+		#	expect{ @oxd_command.get_tokens_by_code("", "") }.to raise_error(RuntimeError)
+		#end
+		#it 'raises error if response has error' do
+		#	code = "I6IjIifX0"		    
+		#	expect{ @oxd_command.get_tokens_by_code(code, "") }.to raise_error(RuntimeError)
+		#end
 		it 'returns access_token' do
 			code = "I6IjIifX0"
+			state = "69krk8qjnshi4nc18n5rpeia4g"
 			client_oxd_cmd = double("ClientOxdCommands")
 			allow(client_oxd_cmd).to receive(:get_tokens_by_code).and_return("mock-token")
-			access_token = client_oxd_cmd.get_tokens_by_code(code)
+			access_token = client_oxd_cmd.get_tokens_by_code(code, state)
 			expect(access_token).to eq("mock-token")
 		end
+	end
 
-		it 'raises error for invalid arguments' do
-			# Empty code should raise error
-			expect{ @oxd_command.get_tokens_by_code("") }.to raise_error(RuntimeError)
-		end
-
-		it 'raises error if response has error' do
-			code = "I6IjIifX0"		    
-			expect{ @oxd_command.get_tokens_by_code(code) }.to raise_error(RuntimeError)
+	describe "#get_access_token_by_refresh_token" do
+		it 'returns access_token' do
+			client_oxd_cmd = double("ClientOxdCommands")
+			allow(client_oxd_cmd).to receive(:get_access_token_by_refresh_token).and_return("mock-token")
+			access_token = client_oxd_cmd.get_access_token_by_refresh_token
+			expect(access_token).to eq("mock-token")
 		end
 	end
 
@@ -87,6 +111,7 @@ describe ClientOxdCommands do
 
 	describe "#update_site_registration" do
 		it 'updates website registration' do
+			Oxd.config.post_logout_redirect_uri = "https://client.example.com/cb"
 		    status = @oxd_command.update_site_registration
 		    expect(status).to be true
 		end
