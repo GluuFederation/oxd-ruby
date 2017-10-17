@@ -19,6 +19,7 @@
             <div class="alert alert-success">
                 Client is registered with Oxd ID : <%= @oxdConfig.oxd_id %>
             </div>
+            <p><strong> Clear Saved Client configuration - </strong><a class="btn btn-primary" href="<%= clear_data_path %>" >Clear data</a></p>
         <% else %>
             <p><strong> Live demo - </strong><a class="btn btn-primary" href="<%= setup_client_path %>" >Setup Client</a></p>
         <% end %>
@@ -47,17 +48,28 @@ end
         <p>Once the client is registered, then the user data can be fetched upon user authorization. <code>get_client_token</code> command must be invoked to use all other methods of API when the <code>protect_commands_with_access_token</code> is enabled in oxd-server.
         oxD Ruby performs client registration automatically when you request for an authorization url. Redirect the user to the authorization url to get user consent.</p>
         <hr>
-        <% if @oxdConfig.oxd_id.present? %>
-            <p><strong> Live demo - </strong><a class="btn btn-primary" href="<%= register_site_path %>" >Login with Open ID</a></p>
+        <% if @oxdConfig.oxd_id.present? %>            
+             <% if @oxdConfig.protection_access_token.present? %>
+                <div class="alert alert-success">
+                    Obtained protection access token is : <%= @oxdConfig.protection_access_token %>
+                </div>
+                <p><strong>Login with Open ID Live demo - </strong><a class="btn btn-primary" href="<%= register_site_path %>" >Login with Open ID</a></p>
+            <% else %>
+                <p><strong>Get Client Token Live demo - </strong><a class="btn btn-primary" href="<%= get_client_token_path %>" >Get Client Token</a></p>
+            <% end %>
         <% end %>
     </div>
     <div class="col-md-6">
     <pre class="prettyprint">
+def get_client_token
+    @oxd_command.get_client_token
+    redirect_to root_path
+end        
+
 def register_site
     if(!@oxd_command.getOxdId.present?)
         @oxd_command.register_site
     end
-    @oxd_command.get_client_token
     authorization_url = @oxd_command.get_authorization_url
     redirect_to authorization_url
 end
@@ -123,9 +135,37 @@ end
 </div>
 <div class="row">
     <div class="col-md-6">
+        <h3>Update webiste registration</h3>
+        <p>The <code>update_site_registration</code> method can be used to update an existing client in the OpenID Connect Provider (OP). Fields like Authorization Redirect URL, Post Logout URL, Scope, Client Secret and other fields can be updated using this method.</p>
+        <% if(@oxdConfig.oxd_id.present? && @oxdConfig.protection_access_token.present?) %>
+            <p><strong>Update webiste registration Live demo. </strong><a class="btn btn-primary" href="<%= update_registration_path %>">Update</a></p>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. Obtain OxdID and Protection Access Token first</div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def update_registration
+    @oxdConfig.client_name = "ClienName 2"
+    if(@oxd_command.update_site_registration)
+        flash[:success] = 'Client settings are updated successfully!!'
+    else
+        flash[:error] = 'There was some error in updating Client settings'
+    end
+    redirect_to root_path   
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
         <h3>UMA Demo</h3>
         <p>UMA defines how resource owners can control protected-resource access by clients operated by arbitrary requesting parties.Once the website has been registered and authorized with OP you can register protection document with UMA.</p>
-       <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%= uma_index_path %>" target="_blank">Go to UMA demo page</a></p>
+        <% if(@oxdConfig.oxd_id.present? && @oxdConfig.protection_access_token.present?) %>
+            <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%= uma_index_path %>" target="_blank">Go to UMA demo page</a></p>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. Obtain OxdID and Protection Access Token first</div>
+        <% end %>
     </div>
 </div>
 <div class="row">

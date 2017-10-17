@@ -2,9 +2,12 @@ Rails.application.routes.draw do
 
   root 'home#index'
   get '/setup_client' => 'home#setup_client'
+  get '/get_client_token' => 'home#get_client_token'
+  get '/update_registration' => 'home#update_registration'
   get '/register_site' => 'home#register_site'
   get '/login' => 'home#login'
   get '/logout' => 'home#logout'
+  get '/clear_data' => 'home#clear_data'
   
   resources :uma do
     collection do
