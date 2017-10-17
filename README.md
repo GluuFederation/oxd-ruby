@@ -7,8 +7,6 @@ Ruby Client Library for the [Gluu oxD Server RP - v3.1.1](https://gluu.org/docs/
 
 ## Using the Library in your website
 
-> You are now on the `master` branch. If you want to use `oxd-ruby` for production use, switch to the branch of the matching version as the `oxd-server` you are installing.
-
 [oxD RP](https://gluu.org/docs/oxd/3.1.1) has complete information about the Code Authorization flow and the various details about oxD RP configuration. This document provides only documentation about the oxd-ruby library.
 
 ### Prerequisites
