@@ -44,8 +44,7 @@ After you installed oxd-ruby, you need to run the generator command to generate 
 $ rails generate oxd:config
 ```
 
-The generator will install `oxd_config.rb` initializer file in `config/initializers` directory which conatins all the global configuration options for oxd-ruby plguin.
-The following configurations must be set in config file before the plugin can be used.
+The generator will install `oxd_config.rb` initializer file in `config/initializers` directory which conatins all the global configuration options for oxd-ruby plguin. The generated configuration file looks like this: 
 
 ```ruby
 config.oxd_host_ip = '127.0.0.1'
@@ -71,6 +70,18 @@ config.oxd_host = "https://127.0.0.1:8443" set if you are using oxd-https extens
 config.connection_type = "local" if you are using oxd-server without oxd-https extension otherwise "web"
 config.dynamic_registration	= true if the op_host supports dynamic registration otherwise 'false'
 ```
+The following configuration must be set in config file before the gem can be used:
+
+- config.oxd_host_ip
+- config.oxd_host_port
+- config.op_host
+- config.authorization_redirect_uri
+- config.client_id
+- config.client_secret
+- config.connection_type
+- config.oxd_host
+
+**Note :** client_id and client_secret must be set if your OpenID provider does not support dynamic registration, otherwise can be left blank.
 
 ## Usage
 
