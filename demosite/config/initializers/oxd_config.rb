@@ -2,7 +2,7 @@
 Oxd.configure do |config|
   	config.oxd_host_ip                			= '127.0.0.1'
 	config.oxd_host_port      		  			= 8099
-	config.op_host					 			= "https://ce-dev2.gluu.org"
+	config.op_host					 			= "https://gluuserver.com"
 	config.client_id 							= ""
 	config.client_secret 						= ""
 	config.client_name 							= "Gluu Oxd Sample Client"
