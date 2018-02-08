@@ -22,7 +22,7 @@ Ruby Client Library for the [Gluu oxD Server RP - v3.1.1](https://gluu.org/docs/
 To install gem, add this line to your application's Gemfile:
 
 ```ruby
-gem 'oxd-ruby', '~> 1.0.0'
+gem 'oxd-ruby', '~> 0.1.9'
 ```
 
 Run bundle command to install it:
@@ -53,6 +53,7 @@ config.client_id = "<client_id of OpenId provider>"
 config.client_secret = "<client_secret of OpenId provider>"
 config.client_name = "Gluu Oxd Sample Client"
 config.authorization_redirect_uri = "https://domain.example.com/callback"
+config.logout_redirect_uri = "https://domain.example.com/callback2"
 config.post_logout_redirect_uri = "https://domain.example.com/logout"
 config.scope = ["openid","profile", "email", "uma_protection","uma_authorization"]
 config.grant_types = []
@@ -63,7 +64,7 @@ config.client_jwks_uri = ""
 config.client_token_endpoint_auth_method = ""
 config.client_request_uris = []
 config.contacts = ["example-email@gmail.com"]
-config.client_frontchannel_logout_uris = ['https://domain.example.com/logout']
+config.client_logout_uris = ['https://domain.example.com/logout']
 config.oxd_host = "https://127.0.0.1:8443" set if you are using oxd-https extension
 config.connection_type = "local" if you are using oxd-server without oxd-https extension otherwise "web"
 config.dynamic_registration	= true if the op_host supports dynamic registration otherwise 'false'

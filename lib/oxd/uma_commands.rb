@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.1
 module Oxd
 
 	require 'json'
@@ -12,14 +12,6 @@ module Oxd
 			@resources = Array.new
 			super
 		end	
-
-		# default params to send with every request
-		def default_params
-			defaults = {
-				"oxd_id" => @configuration.oxd_id,
-				"protection_access_token" => @configuration.protection_access_token
-			}
-		end
 
 		# @param path [STRING] REQUIRED
 		# @param conditions [HASH] REQUIRED (variable number of conditions can be passed)
@@ -40,7 +32,11 @@ module Oxd
 			logger(:log_msg => "Please set resources with uma_add_resource(path, *conditions) method first.") if(@resources.nil?)
 			logger(:log_msg => "UMA configuration #{@configuration}", :error => '')
 			@command = 'uma_rs_protect'
-			@params = default_params.merge({ "resources" => @resources })
+			@params = {
+				"oxd_id" => @configuration.oxd_id,
+				"resources" => @resources,
+				"protection_access_token" => @configuration.protection_access_token
+			}
 	        request('uma-rs-protect')
 	        getResponseData['oxd_id']
 		end
@@ -55,15 +51,17 @@ module Oxd
 		# method for obtaining RPT to gain access to protected resources at the UMA resource server
 		def uma_rp_get_rpt( claim_token = nil, claim_token_format = nil, pct = nil, rpt = nil, scope = nil, state = nil )
 			@command = 'uma_rp_get_rpt'
-	        @params = default_params.merge({
+			@params = {
+				"oxd_id" => @configuration.oxd_id,
 				"ticket" => @configuration.ticket,
 				"claim_token" => claim_token,
 				"claim_token_format" => claim_token_format,
 				"pct" => pct,
 				"rpt" => (!rpt.nil?)? rpt : @configuration.rpt,
 				"scope" => scope,
-				"state" => state
-	        })
+				"state" => state,
+				"protection_access_token" => @configuration.protection_access_token
+	        }
 	        request('uma-rp-get-rpt')
 	        
 	        if getResponseData['error'] == 'need_info' && !getResponseData['details']['ticket'].empty?
@@ -82,11 +80,13 @@ module Oxd
             	logger(:log_msg => "Empty/Wrong value in place of path or http_method.")
         	end
 			@command = 'uma_rs_check_access'
-	        @params = default_params.merge({
+			@params = {
+				"oxd_id" => @configuration.oxd_id,
 				"rpt" => @configuration.rpt,
 				"path" => path,
-				"http_method" => http_method
-	        })
+				"http_method" => http_method,
+				"protection_access_token" => @configuration.protection_access_token
+	        }
 	        request('uma-rs-check-access')
 	        if getResponseData['access'] == 'denied' && !getResponseData['ticket'].empty?
 	        	@configuration.ticket = getResponseData['ticket']
@@ -104,21 +104,14 @@ module Oxd
             	logger(:log_msg => "Empty/Wrong value in place of claims_redirect_uri.")
         	end
 			@command = 'uma_rp_get_claims_gathering_url'
-	        @params = default_params.merge({
+			@params = {
+				"oxd_id" => @configuration.oxd_id,
 				"ticket" => @configuration.ticket,
-				"claims_redirect_uri" => claims_redirect_uri
-	        })
+				"claims_redirect_uri" => claims_redirect_uri,
+				"protection_access_token" => @configuration.protection_access_token
+	        }
 	        request('uma-rp-get-claims-gathering-url')	        
 	        getResponseData
-		end
-
-		# @return [Hash] response data (url, state)
-		# method to check if we have permission to access particular resource or not
-		def introspect_rpt
-			@command = 'introspect_rpt'
-			@params = default_params.merge({ "rpt" => @configuration.rpt })
-	        request('introspect-rpt')	        
-	        getResponseData
-		end		
+		end			
 	end
 end

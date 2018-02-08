@@ -24,8 +24,8 @@ describe OxdConnector do
 	describe "#request" do
 		context "when valid arguments are passed" do
 			it 'should return a response object' do
-				@socket_connection.instance_variable_set :@command, "setup_client"
-				@socket_connection.instance_variable_set :@params, {"authorization_redirect_uri" => "https://client.example.org/cb", "op_host" => Oxd.config.op_host}
+				@socket_connection.instance_variable_set :@command, "get_authorization_url"
+				@socket_connection.instance_variable_set :@params, {"oxd_id" => Oxd.config.oxd_id, "acr_values" => Oxd.config.acr_values}
 			    expect( @socket_connection.request ).not_to be_nil
 			end	
 		end

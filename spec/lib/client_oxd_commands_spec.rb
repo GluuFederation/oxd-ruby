@@ -21,17 +21,6 @@ describe ClientOxdCommands do
 		end
 	end
 
-	describe "#introspect_access_token" do
-		it 'returns response object' do
-		    response = @oxd_command.introspect_access_token
-		    expect(response).not_to be_nil
-		    expect(response['token_type']).to eq("bearer")
-		    expect(response['active']).to be_present
-		    expect(response['client_id']).to be_present
-		    expect(response['scopes']).to be_present
-		end
-	end
-
 	describe "#register_site" do
 		it 'returns oxd_id' do
 		    @oxd_command.register_site
@@ -60,6 +49,14 @@ describe ClientOxdCommands do
 	end
 	
 	describe "#get_tokens_by_code" do
+		#it 'raises error for invalid arguments' do
+			# Empty code should raise error		
+		#	expect{ @oxd_command.get_tokens_by_code("", "") }.to raise_error(RuntimeError)
+		#end
+		#it 'raises error if response has error' do
+		#	code = "I6IjIifX0"		    
+		#	expect{ @oxd_command.get_tokens_by_code(code, "") }.to raise_error(RuntimeError)
+		#end
 		it 'returns access_token' do
 			code = "I6IjIifX0"
 			state = "69krk8qjnshi4nc18n5rpeia4g"
@@ -95,29 +92,27 @@ describe ClientOxdCommands do
 
 	describe "#get_logout_uri" do
 		it 'returns logout uri' do
-			Oxd.config.id_token = "eyJraWQiOiI3ZjUxYjM5Mi0wOTFlLTQ1NmYtODAyZS01ZjA5OWQzZDZhNWMiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2dsdXVzZXJ2ZXIuY29tIiwiYXVkIjoiQCEzRENCLkRFMzIuM0QwRS5EMTY1ITAwMDEhMkFDNi5BOEQzITAwMDghMjUxMS4yQUQ0LjExOTYuNEE1MSIsImV4cCI6MTUxODA3MzA3MCwiaWF0IjoxNTE4MDY5NDcwLCJhY3IiOiJiYXNpYyBkdW8iLCJhbXIiOltdLCJub25jZSI6InJoMmphYWxwaWVobTM5Y2xyc2dvNWthMTNtIiwiYXV0aF90aW1lIjoxNTE4MDY5NDY4LCJhdF9oYXNoIjoiYWxFc3N3RE01RFVRVjNXQXdrWE5vZyIsIm94T3BlbklEQ29ubmVjdFZlcnNpb24iOiJvcGVuaWRjb25uZWN0LTEuMCIsInN1YiI6ImVEOEdTaTdFc2ZPd0tpU3RFczRYdHl1Qm84UTQ3SXpQcEROLW1lelFBS0EifQ.R7jPtZ2vTsS3nZNZO4B4P099RcPBgV-KsA3J1zSAgwNbvEUorIoddQZU6pWkdR6fsIjnEzmakKf02TE6lYJApTpT-lqMves1OtflrG9gwnRcf6Nl1WnvgwuXnavS6j7Q63YEEmmbuNtxTSE4fDw-EsnyZqtzeerdUv0RDzjJNSqfmcsAM0SJ_9FTommNOo8nJBim-2fHY9fUoSxC73_2CrFK0xOe-52CkjVVV375ZrYaAIBqOusOMj0PcDCUDOIMJgnGOLcv5CR6D04KgzD4p4T3aC8k3KMdxIbyASHnec4VQjIsLXZldyKRSQaBbOM3dmO4HczsoTsrQ6g04DyKzw"
-		    
-		    logout_uri = @oxd_command.get_logout_uri
+		    logout_uri = @oxd_command.get_logout_uri("257095f0-d0b4-4667-8e56-7cd48e490a77")
 		    expect(logout_uri).to match(/end_session/)
 
 		    # called wiht OPTIONAL state
-		    logout_uri_with_state = @oxd_command.get_logout_uri("some-s")
+		    logout_uri_with_state = @oxd_command.get_logout_uri("257095f0-d0b4-4667-8e56-7cd48e490a77","some-s")
 		    expect(logout_uri_with_state).to match(/end_session/)
 
 		    # called wiht OPTIONAL session_state
-		    logout_uri_with_sstate = @oxd_command.get_logout_uri("","some-ss")
+		    logout_uri_with_sstate = @oxd_command.get_logout_uri("257095f0-d0b4-4667-8e56-7cd48e490a77","","some-ss")
 		    expect(logout_uri_with_sstate).to match(/end_session/)
 
 		    # called wiht OPTIONAL state + session_state
-		    logout_uri_with_state_sstate = @oxd_command.get_logout_uri("some-s","some-ss")
+		    logout_uri_with_state_sstate = @oxd_command.get_logout_uri("257095f0-d0b4-4667-8e56-7cd48e490a77","some-s","some-ss")
 		    expect(logout_uri_with_state_sstate).to match(/end_session/)
 		end
 	end
 
-	describe "#update_site" do
+	describe "#update_site_registration" do
 		it 'updates website registration' do
 			Oxd.config.post_logout_redirect_uri = "https://client.example.com/cb"
-		    status = @oxd_command.update_site
+		    status = @oxd_command.update_site_registration
 		    expect(status).to be true
 		end
 	end

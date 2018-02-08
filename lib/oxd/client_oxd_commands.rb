@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.1
 module Oxd
 
 	require 'json'
@@ -32,18 +32,16 @@ module Oxd
 				"client_name" => @configuration.client_name,
 				"client_token_endpoint_auth_method" => @configuration.client_token_endpoint_auth_method,
 				"client_request_uris" => @configuration.client_request_uris,
-				"client_frontchannel_logout_uris" => @configuration.client_frontchannel_logout_uris,
+				"client_logout_uris"=> @configuration.client_logout_uris,
 				"client_sector_identifier_uri" => @configuration.client_sector_identifier_uri,
 				"contacts" => @configuration.contacts,
 				"ui_locales" => @configuration.ui_locales,
 				"claims_locales" => @configuration.claims_locales,
-				"claims_redirect_uri" => @configuration.claims_redirect_uri,
 				"client_id" => @configuration.client_id,
-		        "client_secret" => @configuration.client_secret
+		        "client_secret" => @configuration.client_secret,
+		        "oxd_rp_programming_language" => 'ruby',
+				"protection_access_token" => @configuration.protection_access_token
 			}
-
-			#logger(:log_msg => @configuration.inspect)
-
 			request('setup-client')
 	        @configuration.client_id = getResponseData['client_id']
 	        @configuration.client_secret = getResponseData['client_secret']
@@ -68,18 +66,17 @@ module Oxd
 		            "grant_types" => @configuration.grant_types,
 		            "scope" => @configuration.scope,
 		            "acr_values" => @configuration.acr_values,
-					"client_name" => @configuration.client_name,
 		            "client_jwks_uri" => @configuration.client_jwks_uri,
 		            "client_token_endpoint_auth_method" => @configuration.client_token_endpoint_auth_method,
 		            "client_request_uris" => @configuration.client_request_uris,
-		            "client_frontchannel_logout_uris"=> @configuration.client_frontchannel_logout_uris,
-					"client_sector_identifier_uri" => @configuration.client_sector_identifier_uri,
+		            "client_logout_uris"=> @configuration.client_logout_uris,
 		            "contacts" => @configuration.contacts,
-					"ui_locales" => @configuration.ui_locales,
-					"claims_locales" => @configuration.claims_locales,
-					"claims_redirect_uri" => @configuration.claims_redirect_uri,
 		            "client_id" => @configuration.client_id,
 		            "client_secret" => @configuration.client_secret,
+					"client_name" => @configuration.client_name,
+					"client_sector_identifier_uri" => @configuration.client_sector_identifier_uri,
+					"ui_locales" => @configuration.ui_locales,
+					"claims_locales" => @configuration.claims_locales,
 					"protection_access_token" => @configuration.protection_access_token
 		        }
 		        request('register-site')
@@ -94,27 +91,30 @@ module Oxd
 		def get_client_token
 			@command = 'get_client_token'
 			@params = {
+	        	"oxd_id" => @configuration.oxd_id,
+				"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
 				"op_host" => @configuration.op_host,
+				"post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
+				"application_type" => @configuration.application_type,		            
+				"response_types"=> @configuration.response_types,
+				"grant_types" => @configuration.grant_types,
 				"scope" => @configuration.scope,
+				"acr_values" => @configuration.acr_values,
+				"client_name" => @configuration.client_name,
+				"client_jwks_uri" => @configuration.client_jwks_uri,
+				"client_token_endpoint_auth_method" => @configuration.client_token_endpoint_auth_method,
+				"client_request_uris" => @configuration.client_request_uris,
+				"client_sector_identifier_uri" => @configuration.client_sector_identifier_uri,
+				"contacts" => @configuration.contacts,
+				"ui_locales" => @configuration.ui_locales,
+				"claims_locales" => @configuration.claims_locales,
 				"client_id" => @configuration.client_id,
 				"client_secret" => @configuration.client_secret,
-				"op_discovery_path" => @configuration.op_discovery_path,
+				"client_frontchannel_logout_uris"=> @configuration.client_logout_uris,
+				"oxd_rp_programming_language" => 'ruby'
 	        }
 	        request('get-client-token')
 	        @configuration.protection_access_token = getResponseData['access_token']
-		end
-
-		# @return [STRING] access_token
-		# method to generate the protection access token
-		# obtained access token is passed as protection_access_token to all further calls to oxd-https-extension
-		def introspect_access_token
-			@command = 'introspect_access_token'
-			@params = {
-				"oxd_id" => @configuration.oxd_id,
-				"access_token" => @configuration.protection_access_token
-	        }
-	        request('introspect-access-token')
-	        getResponseData
 		end
 
 		# @param scope [Array] OPTIONAL, scopes required, takes the scopes registered with register_site by defualt
@@ -219,13 +219,13 @@ module Oxd
 		# method to update the website's information with OpenID Provider. 
 		# 	This should be called after changing the values in the oxd_config file.
 		# works with oxd-to-https and oxd-server
-		def update_site
-	    	@command = 'update_site'
+		def update_site_registration
+	    	@command = 'update_site_registration'
         	@params = {
 	        	"oxd_id" => @configuration.oxd_id,
 				"authorization_redirect_uri" => @configuration.authorization_redirect_uri,
 				"post_logout_redirect_uri" => @configuration.post_logout_redirect_uri,
-				"client_frontchannel_logout_uris"=> @configuration.client_frontchannel_logout_uris,
+				"client_logout_uris"=> @configuration.client_logout_uris,
 				"response_types"=> @configuration.response_types,
 				"grant_types" => ["authorization_code","client_credentials","uma_ticket"],
 				"scope" => @configuration.scope,
@@ -242,25 +242,6 @@ module Oxd
 				"protection_access_token" => @configuration.protection_access_token
 	        }
 	        request('update-site')
-	        if @response_object['status'] == "ok"
-	        	@configuration.oxd_id = getResponseData['oxd_id']
-	            return true
-	        else
-	            return false
-	        end
-		end
-
-		# @return [Boolean] status - if site data was cleaned successfully or not
-		# method to clean up the website's information from OpenID Provider. 
-		# 	This should be called after changing the values in the oxd_config file.
-		# works with oxd-to-https and oxd-server
-		def remove_site
-	    	@command = 'remove_site'
-        	@params = {
-	        	"oxd_id" => @configuration.oxd_id,
-	        	"protection_access_token" => @configuration.protection_access_token
-	        }
-	        request('remove-site')
 	        if @response_object['status'] == "ok"
 	        	@configuration.oxd_id = getResponseData['oxd_id']
 	            return true

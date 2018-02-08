@@ -1,0 +1,210 @@
+<div class="jumbotron">
+    <h2>Ruby on Rails demo Site for OxD Ruby Library</h2>
+    <p>This is a demo site showcasing the usage of OxD Ruby Library. The demo site is written in Ruby on Rails and shows that the library can be used to perform OpenID based authentication.</p>
+</div>
+
+<% flash.each do |key, value| %>
+  <div class="alert alert-<%= key %>"><%= value %></div>
+<% end %>
+
+<div class="row">
+    <div class="col-md-6">
+	   <h3>Setup Client</h3>
+       <p>
+            In order to use an OpenID Connect Provider (OP) for login, you need to setup your client application at the OP. During setup oxd will dynamically register the OpenID Connect client and save its configuration. Upon successful setup a unique identifier will be issued by the oxd server by assigning a specific oxd id. Along with oxd Id oxd server will also return client Id and client secret. This client Id and client secret can be used for <code>get_client_token</code> method. The Setup Client method is a one time task to configure a client in the oxd server and OP.
+       </p>
+       <b>Note:</b> If your OpenID Connect Provider does not support dynamic registration (like Google), you will need to obtain a ClientID and Client Secret which can be set in <code>oxd_config.rb</code> initializer file.
+       <hr>
+        <% if @oxdConfig.oxd_id.present? %>
+            <div class="alert alert-success">
+                Client is registered with Oxd ID : <%= @oxdConfig.oxd_id %>
+            </div>
+            <p><strong> Clear Saved Client configuration - </strong><a class="btn btn-primary" href="<%= clear_data_path %>" >Clear data</a></p>
+        <% else %>
+            <p><strong> Live demo - </strong><a class="btn btn-primary" href="<%= setup_client_path %>" >Setup Client</a></p>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def setup_client
+    unless(@oxdConfig.oxd_id.present?)          
+        check_openid_type(@oxdConfig.op_host)
+
+        if(@oxdConfig.dynamic_registration == false && (@oxdConfig.client_id.nil? && @oxdConfig.client_secret.nil?))                
+            flash[:info] = 'Enter client ID and client Secret in oxd_config.rb file'
+        else
+            @oxd_command.setup_client
+        end         
+    end
+    flash[:success] = 'Client is registered with Oxd ID : '+@oxdConfig.oxd_id
+    redirect_to root_path
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Get Client Token and Login to Open Id</h3>
+        <p>Once the client is registered, then the user data can be fetched upon user authorization. <code>get_client_token</code> command must be invoked to use all other methods of API when the <code>protect_commands_with_access_token</code> is enabled in oxd-server.
+        oxD Ruby performs client registration automatically when you request for an authorization url. Redirect the user to the authorization url to get user consent.</p>
+        <hr>
+        <% if @oxdConfig.oxd_id.present? %>            
+             <% if @oxdConfig.protection_access_token.present? %>
+                <div class="alert alert-success">
+                    Obtained protection access token is : <%= @oxdConfig.protection_access_token %>
+                </div>
+                <p><strong>Login with Open ID Live demo - </strong><a class="btn btn-primary" href="<%= register_site_path %>" >Login with Open ID</a></p>
+            <% else %>
+                <p><strong>Get Client Token Live demo - </strong><a class="btn btn-primary" href="<%= get_client_token_path %>" >Get Client Token</a></p>
+            <% end %>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def get_client_token
+    @oxd_command.get_client_token
+    redirect_to root_path
+end        
+
+def register_site
+    if(!@oxd_command.getOxdId.present?)
+        @oxd_command.register_site
+    end
+    authorization_url = @oxd_command.get_authorization_url
+    redirect_to authorization_url
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+    <h3>Get user information</h3>
+    <p>Once the user authorizes the website to use the information from the OP, the OP calls back the website with code and scopes for accessing the user data in the registered callback <code>authorization_redirect_uri</code> in the config file. Then an access token is obtained from the OP using <code>get_tokens_by_code</code> command with which user claims can be requested.</p>
+    <p>The <code>get_access_token_by_refresh_token</code> method can be used to get a fresh access token and refresh token by using the refresh token which is obtained from <code>get_tokens_by_code</code> method. The newly obtained access token can be used with <code>get_user_info</code> command to fetch user claims.
+    </p>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def login
+    if(@oxdConfig.oxd_id.present?)
+        if (params[:code].present?)
+            @access_token = @oxd_command.get_tokens_by_code( params[:code], params[:state]) 
+        end
+        session.delete('oxd_access_token') if(session[:oxd_access_token].present?)
+        if(@oxdConfig.dynamic_registration == true)
+            @access_token = @oxd_command.get_access_token_by_refresh_token
+        end
+        session[:oxd_access_token] = @access_token
+        session[:state] = params[:state]
+        session[:session_state] = params[:session_state]
+        @user = @oxd_command.get_user_info(session[:oxd_access_token]) # pass access_token get user information from OP
+        render :template => "home/index", :locals => { :user => @user }             
+        end
+end
+        </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Using the user claims</h3>
+        <p>Once the user data is obtained, the various claims supported by the OP can be used as required.</p>
+        <% if defined?(user) %>
+        <div class="alert alert-success">
+            <% user.each do |field,value| %>
+               <%= "#{field} : #{value}" %>
+               <br>
+            <% end %>
+        </div>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. You haven't authorized the demo user yet.</div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+        <h3>Template code</h3>
+        <pre class="prettyprint">
+if defined?(user)
+    &lt;div class="alert alert-success"&gt;
+        user.each do |field,value|
+           "#{field} : #{value}"
+           &lt;br&gt;
+        end
+    &lt;/div&gt;
+end
+        </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Update webiste registration</h3>
+        <p>The <code>update_site_registration</code> method can be used to update an existing client in the OpenID Connect Provider (OP). Fields like Authorization Redirect URL, Post Logout URL, Scope, Client Secret and other fields can be updated using this method.</p>
+        <% if(@oxdConfig.oxd_id.present? && @oxdConfig.protection_access_token.present?) %>
+            <p><strong>Update webiste registration Live demo. </strong><a class="btn btn-primary" href="<%= update_registration_path %>">Update</a></p>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. Obtain OxdID and Protection Access Token first</div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def update_registration
+    @oxdConfig.client_name = "ClienName 2"
+    if(@oxd_command.update_site_registration)
+        flash[:success] = 'Client settings are updated successfully!!'
+    else
+        flash[:error] = 'There was some error in updating Client settings'
+    end
+    redirect_to root_path   
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA Demo</h3>
+        <p>UMA defines how resource owners can control protected-resource access by clients operated by arbitrary requesting parties.Once the website has been registered and authorized with OP you can register protection document with UMA.</p>
+        <% if(@oxdConfig.oxd_id.present? && @oxdConfig.protection_access_token.present?) %>
+            <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%= uma_index_path %>" target="_blank">Go to UMA demo page</a></p>
+        <% else %>
+            <div class="alert alert-warning">No business card for you. Obtain OxdID and Protection Access Token first</div>
+        <% end %>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Logging Out</h3>
+        <p>Once the required work is done the user can be logged out of the system.</p>
+        <a class="btn btn-danger" href="<%= logout_path %>">Logout</a>
+    </div>
+   <div class="col-md-6">
+    <pre class="prettyprint">
+def logout
+    if(session[:oxd_access_token])
+        @logout_url = @oxd_command.get_logout_uri(session[:state], session[:session_state])
+        redirect_to @logout_url
+    end    
+end
+    </pre>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        
+        <% if @oxdConfig.oxd_id.present? %>
+            $('.disabled').attr('disabled',true);
+            <% if @oxdConfig.dynamic_registration == true %>
+                $('.dynamic_registration_disabled').attr('disabled',true);
+            <% end %>
+        <% end %>
+
+        $('input[name=connection_type]').on('change', function(){
+            var checked_btn = $(this).val();
+            $('.connection_type_value').addClass('hidden');
+            $('.'+checked_btn+'_connection_type').removeClass('hidden');
+        });
+
+        $('#login').on('click', function(evt){
+            evt.preventDefault();
+            window.location = '<%= register_site_path %>';
+        });
+    });
+</script>

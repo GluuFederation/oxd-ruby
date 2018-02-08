@@ -33,10 +33,18 @@ describe UMACommands do
 
 		it 'raises error if response has error' do
 			@uma_command.instance_variable_set :@resources, [:paths => "/photo"]
-			expect{ @uma_command.uma_rs_protect }.to raise_error(Oxd::ServerError)
+			expect{ @uma_command.uma_rs_protect }.to raise_error(RuntimeError)
 		end
 	end
-	
+
+	describe "#uma_rp_get_rpt" do
+		it 'returns rpt' do
+		    rpt = @uma_command.uma_rp_get_rpt
+		    expect(rpt).not_to be_nil
+		    expect(rpt).to eq(Oxd.config.rpt)
+		end
+	end
+
 	describe "#uma_rs_check_access" do
 		it 'returns access status' do
 		    response = @uma_command.uma_rs_check_access('/photo', 'GET')
@@ -55,35 +63,14 @@ describe UMACommands do
 		end
 	end
 
-	describe "#uma_rp_get_rpt" do
-		it 'returns rpt' do
-		    rpt = @uma_command.uma_rp_get_rpt
-		    expect(rpt).not_to be_nil
-		    expect(rpt['token_type']).to eq("Bearer")
-		    expect(rpt['pct']).to be_present
-		    expect(rpt['access_token']).to be_present
-		end
-	end
-
-	describe "#introspect_rpt" do
-		it 'returns response object' do
-		    response = @uma_command.introspect_rpt
-		    expect(response).not_to be_nil
-		    expect(response['active']).not_to be_nil
-		end
-	end
-
 	describe "#uma_rp_get_claims_gathering_url" do
 		it 'returns oxd_id' do
 		    response = @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb')
-		    expect(response['url']).to match(/gather_claims/)
-		    expect(response['url']).to match(/client_id/)
-		    expect(response['url']).to match(/ticket/)
-		    expect(response['url']).to match(/state/)
+		    expect(response).to match(/claims_redirect_uri/)
 		end
 
 		it 'raises error if response has error' do
-			Oxd.config.ticket = ''
+			Oxd.config.ticket = 'ce2b9c5b-812b-40b6-98b4-28346c01db68'
 		    expect{ @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb') }.to raise_error(RuntimeError)
 		end
 	end

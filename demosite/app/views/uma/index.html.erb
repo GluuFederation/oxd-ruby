@@ -1,0 +1,123 @@
+<div class="jumbotron">
+    <h2>UMA RS and UMA RP Demo page for OxD Ruby Library</h2>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>Get Client Token</h3>
+        <p><code>get_client_token</code> command must be invoked to use all other methods of API when the <code>protect_commands_with_access_token</code> is enabled in oxd-server.</p>
+        <hr>
+        <div class="alert alert-success">
+            Obtained protection access token is : <%= @oxdConfig.protection_access_token %>
+        </div>
+        <p><strong>Get Client Token Live demo - </strong><a class="btn btn-primary" href="<%= get_client_token_uma_index_path %>" >Get Client Token</a></p>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def get_client_token
+    @oxd_command.get_client_token
+    redirect_to uma_index_path
+end
+    </pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RS Protect resources</h3>
+        <p>To protect resources with UMA RS, you need to add resources to library using <code>uma_add_resource(path, *conditions)</code> method. Then you can call <code>uma_rs_protect</code> method to register resources for protection with UMA RS.</p>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=   protect_resources_uma_index_path  %>">Protect Resources</a></p>
+        <% if defined?(protect_resources_response) %>
+        <div class="alert alert-success">
+            <%= "Response Oxd ID: #{protect_resources_response}" %>
+        </div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+    <pre class="prettyprint">
+def protect_resources
+    condition1 = {:httpMethods => ["GET"], :scopes => ["http://photoz.example.com/dev/actions/view"]}
+    condition2 = {:httpMethods => ["PUT", "POST"], 
+                :scopes => ["http://photoz.example.com/dev/actions/all","http://photoz.example.com/dev/actions/add"], 
+                :ticketScopes => ["http://photoz.example.com/dev/actions/add"]
+            }
+    @uma_command.uma_add_resource("/photo", condition1, condition2)
+    @uma_command.uma_rs_protect
+end
+    </pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+        <h3>UMA RP - Get RPT</h3>
+        <p>To gain access to protected resources at the UMA resource server, you must first obtain RPT (Requesting Party Token) using <code>uma_rp_get_rpt</code> call.</p>
+        <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  get_rpt_uma_index_path %>">Get RPT</a></p>        
+        <% if defined?(get_rpt_response) %>
+        <div class="alert alert-success">
+            <%= "Response is: #{get_rpt_response}" %>
+        </div>
+        <% end %>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def get_rpt
+    response = @uma_command.uma_rp_get_rpt
+    render :template => "uma/index", :locals => { :get_rpt_response => response } 
+end
+        </pre>
+    </div>
+</div>
+<hr>
+<div class="row">
+    <div class="col-md-6">
+    <h3>UMA RS Check Access</h3>
+    <p>To check wether you have access to a particular resource on UMA Resource Sevrer or not, make call to <code>uma_rs_check_access(path, http_method)</code> method.</p>
+    <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%=  check_access_uma_index_path %>">Check access</a></p>
+    <% if defined?(check_access_response) %>
+        <% if check_access_response['access'] == 'denied' %>
+            <div class="alert alert-warning">
+                <%= "Response : access #{check_access_response['access']}" %><br>
+                <%= "Response ticket : #{check_access_response['ticket']}" if check_access_response['ticket'].present? %>
+            </div>
+        <% else %>
+            <div class="alert alert-success">
+                <%= "Response : #{check_access_response}" %>
+            </div>
+        <% end %>    
+    <% end %>
+    </div>
+    <div class="col-md-6">
+    	<pre class="prettyprint">
+def check_access
+    response = @uma_command.uma_rs_check_access('/photo', 'GET')
+    render :template => "uma/index", :locals => { :check_access_response => response } 
+end
+		</pre>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+    <h3>UMA RP - Get Claims-Gathering URL</h3>
+    <p>After being redirected to the Claims Gathering URL the user goes through the claims gathering flow. If successful, the user is redirected back to claims_redirect_uri with a new ticket</p>
+    <p><strong> Live demo. </strong><a class="btn btn-primary" href="<%= get_claims_gathering_url_uma_index_path %>">Get Claims-Gathering URL</a></p>
+    <% if defined?(get_claims_gathering_url_response) %>
+        <% if get_claims_gathering_url_response['access'] == 'denied' %>
+            <div class="alert alert-warning">
+                <%= "Response : access #{get_claims_gathering_url_response['access']}" %><br>
+                <%= "Response ticket : #{get_claims_gathering_url_response['ticket']}" if get_claims_gathering_url_response['ticket'].present? %>
+            </div>
+        <% else %>
+            <div class="alert alert-success">
+                <%= "Response : #{get_claims_gathering_url_response}" %>
+            </div>
+        <% end %>    
+    <% end %>
+    </div>
+    <div class="col-md-6">
+        <pre class="prettyprint">
+def get_claims_gathering_url
+    response = @uma_command.uma_rp_get_claims_gathering_url('/photo')
+    render :template => "uma/index", :locals => { :get_claims_gathering_url_response => response } 
+end
+        </pre>
+    </div>
+</div>
