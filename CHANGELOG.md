@@ -1,6 +1,22 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2018-02-12
+### Added
+- support for "client_credentials" `grant_type`
+- new `update_site` command
+- new `remove_site` command
+- new `introspect_access_token` command
+- new `introspect_rpt` command
+- `client_frontchannel_logout_uris` and `claims_redirect_uri` parameters in `setup_client` and `register_site` commands
+- `op_discovery_path` parameter in `get_client_token` command
+
+### Removed
+- `update_site_registration` command
+- `client_logout_uris` and `oxd_rp_programming_language` parameters from `setup_client` command
+- `oxd_id`, `authorization_redirect_uri`, `post_logout_redirect_uri`, `application_type`, `response_types`, `grant_types`, `acr_values`, `client_name`, `client_jwks_uri`, `client_token_endpoint_auth_method`, `client_request_uris`, `client_sector_identifier_uri`, `contacts`, `ui_locales`, `claims_locales`, `client_logout_uris` and `oxd_rp_programming_language` parameters from `get_client_token` command
+- `client_logout_uris` parameter from `register_site` command
+
 ## [0.1.9] - 2017-10-17
 ### Added
 - support for oxd-to-https

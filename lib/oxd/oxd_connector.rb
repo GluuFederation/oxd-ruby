@@ -5,7 +5,7 @@ require 'json'
 require 'uri'
 
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.1
+# @note supports oxd-version 3.1.2
 module Oxd
 
 	# A class which takes care of the socket communication with oxD Server.
@@ -28,7 +28,7 @@ module Oxd
 
 	    # Checks the validity of command that is to be passed to oxd-server
 	    def validate_command
-	    	command_types = ['setup_client', 'get_client_token', 'get_authorization_url','update_site_registration','get_tokens_by_code','get_access_token_by_refresh_token', 'get_user_info', 'register_site', 'get_logout_uri','get_authorization_code','uma_rs_protect','uma_rs_check_access','uma_rp_get_rpt','uma_rp_get_claims_gathering_url']
+	    	command_types = ['setup_client', 'get_client_token', 'introspect_access_token', 'get_authorization_url','update_site','remove_site','get_tokens_by_code','get_access_token_by_refresh_token', 'get_user_info', 'register_site', 'get_logout_uri','get_authorization_code','uma_rs_protect','uma_rs_check_access','uma_rp_get_rpt','uma_rp_get_claims_gathering_url','introspect_rpt']
 	    	if (!command_types.include?(@command))
 				logger(:log_msg => "Command: #{@command} does not exist! Exiting process.")
         	end
@@ -59,14 +59,12 @@ module Oxd
 	        if(socket.close)
 	        	logger(:log_msg => "Client: oxd_socket_connection : disconnected.", :error => "")
 	        end
-	        #logger(:log_msg => response)
-			#abort
 	        return response
 		end
 		
-		# method to communicate with the oxD-to-http server
+		# method to communicate with the oxD-to-https server
 		# @param request_params [JSON] representation of the JSON command string
-		# @return response from the oxD-to-http server
+		# @return response from the oxD-to-https server
 		def oxd_http_request(request_params, command = "")
 			uri = URI.parse("https://127.0.0.1/"+command)
 			http = Net::HTTP.new("127.0.0.1", 8443)
@@ -81,10 +79,10 @@ module Oxd
 			end
 			request.body = request_params
 			logger(:log_msg => "Sending oxd_http_request command #{command} with data #{request_params.inspect}", :error => "")
-			response = http.request(request)
-			response2 = response.body
-			logger(:log_msg => "oxd_http_request response #{response2}", :error => "")
-			return response2
+			http_response = http.request(request)
+			response = http_response.body
+			logger(:log_msg => "oxd_http_request response #{response}", :error => "")
+			return response
 		end
 
 		# @param comm [String] command string for oxd-to-http
@@ -100,7 +98,7 @@ module Oxd
 				jsondata = getData.to_json
 				if(!is_json? (jsondata))
 					logger(:log_msg => "Sending parameters must be JSON. Exiting process.")
-				end
+				end				
 				length = jsondata.length
 				if( length <= 0 )
 					logger(:log_msg => "JSON data length must be more than zero. Exiting process.")
@@ -110,17 +108,21 @@ module Oxd
 				@response_json = oxd_socket_request((length.to_s + jsondata).encode("UTF-8"))
 				@response_json.sub!(@response_json[0..3], "")
 	        else
-				jsondata = getData2.to_json
+				jsondata = @params.to_json
 				@response_json = oxd_http_request(jsondata, comm)
 	        end
 
 
 	        if (@response_json)
 	            response = JSON.parse(@response_json)
-	            if (response['status'] == 'error') 
+	            if (response['status'] == 'error')	            	
+            		raise ServerError, response['data'] if response['data']['error'] == 'internal_error'
+			        raise NeedInfoError, response['data'] if response['data']['error'] == 'need_info'			            
+			        raise InvalidTicketError, response['data'] if response['data']['error'] == 'invalid_ticket'
+			    	raise InvalidRequestError, response['data'] if response['data']['error'] == 'invalid_request'                
+			            
 	    			logger(:log_msg => "OxD Server Error : #{response['data']['error_description']}")
-	            elsif (response['status'] == 'ok')
-					
+	            elsif (response['status'] == 'ok')					
 	                @response_object = JSON.parse(@response_json)
 	            end
 	        else
@@ -153,11 +155,6 @@ module Oxd
         	return @data
 	    end
 	    
-	    def getData2
-	    	@data = @params
-        	return @data
-	    end
-
     	# checks whether the passed string is in JSON format or not
     	# @param  string_to_validate [String]
     	# @return [Boolean]
