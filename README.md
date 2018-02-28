@@ -1,4 +1,4 @@
-# Oxd Ruby
+# oxd Ruby
 
 Ruby Client Library for the [Gluu oxD Server RP - v3.1.1](https://gluu.org/docs/oxd/3.1.1).
 
