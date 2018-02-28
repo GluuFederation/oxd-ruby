@@ -1,14 +1,14 @@
 # oxd Ruby
 
-Ruby Client Library for the [Gluu oxD Server RP - v3.1.1](https://gluu.org/docs/oxd/3.1.1).
+Ruby Client Library for the [Gluu oxd Server RP - v3.1.1](https://gluu.org/docs/oxd/3.1.1).
 
-oxd ruby is a thin wrapper around the communication protocol of oxD server. This can be used to access the OpenID connect & UMA Authorization end points of the Gluu Server via the oxD RP. This library provides the function calls required by a website to access user information from a OpenID Connect Provider (OP) by using the OxD as the Relying Party (RP).
+oxd ruby is a thin wrapper around the communication protocol of oxd server. This can be used to access the OpenID connect & UMA Authorization end points of the Gluu Server via the oxd RP. This library provides the function calls required by a website to access user information from a OpenID Connect Provider (OP) by using the OxD as the Relying Party (RP).
 
 ## Using the Library in your website
 
 > You are now on the `master` branch. If you want to use `oxd-ruby` for production use, switch to the branch of the matching version as the `oxd-server` you are installing.
 
-[oxD RP](https://gluu.org/docs/oxd/3.1.1) has complete information about the Code Authorization flow and the various details about oxD RP configuration. This document provides only documentation about the oxd-ruby library.
+[oxd RP](https://gluu.org/docs/oxd/3.1.1) has complete information about the Code Authorization flow and the various details about oxd RP configuration. This document provides only documentation about the oxd-ruby library.
 
 ### Prerequisites
 
