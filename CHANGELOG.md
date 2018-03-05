@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2018-02-12
+## [1.0.0] - 2018-03-05
 ### Added
 - support for "client_credentials" `grant_type`
 - new `update_site` command

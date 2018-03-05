@@ -5,11 +5,13 @@ Oxd.configure do |config|
 	config.op_host					 			= "https://your.openid.provider.com"
 	config.client_id 							= ""
 	config.client_secret 						= ""
-	config.client_name 							= "Gluu Oxd Sample Client"
+	config.client_name 							= "Gluu oxd Sample Client"
+	config.op_discovery_path 					= ""
 	config.authorization_redirect_uri 			= "https://domain.example.com/callback"
 	config.post_logout_redirect_uri	  			= "https://domain.example.com/logout"
+	config.claims_redirect_uri	  				= ["https://domain.example.com/claims"]
 	config.scope					  			= ["openid","profile", "email", "uma_protection","uma_authorization"]
-	config.grant_types							= []
+	config.grant_types							= ["authorization_code","client_credenitals"]
 	config.application_type       	  			= "web"
 	config.response_types     		  			= ["code"]
 	config.acr_values 				  			= ["basic"]
@@ -18,7 +20,6 @@ Oxd.configure do |config|
 	config.client_request_uris					= []
 	config.contacts								= ["example-email@gmail.com"]
 	config.client_frontchannel_logout_uris		= ['https://domain.example.com/logout']
-	config.oxd_host 							= ""
 	config.connection_type 						= "local"
 	config.dynamic_registration					= true
 end

@@ -74,12 +74,12 @@ describe UMACommands do
 	end
 
 	describe "#uma_rp_get_claims_gathering_url" do
-		it 'returns oxd_id' do
-		    response = @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb')
-		    expect(response['url']).to match(/gather_claims/)
-		    expect(response['url']).to match(/client_id/)
-		    expect(response['url']).to match(/ticket/)
-		    expect(response['url']).to match(/state/)
+		it 'returns claims redirect url' do
+		    response_url = @uma_command.uma_rp_get_claims_gathering_url('https://client.example.com/cb')
+		    expect(response_url).to match(/gather_claims/)
+		    expect(response_url).to match(/client_id/)
+		    expect(response_url).to match(/ticket/)
+		    expect(response_url).to match(/state/)
 		end
 
 		it 'raises error if response has error' do

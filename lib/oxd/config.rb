@@ -4,7 +4,7 @@ require 'active_support/configurable'
 # @note supports oxd-version 3.1.2
 module Oxd
 
-  # Configures global settings for Oxd
+  # Configures global settings for oxd
   # @yield config
   # @example
   #   Oxd.configure do |config|
@@ -17,7 +17,7 @@ module Oxd
     end
   end
 
-  # Global settings for Oxd
+  # Global settings for oxd
   def self.config
     @config
   end
@@ -44,7 +44,6 @@ module Oxd
     config_accessor :contacts
     config_accessor :client_frontchannel_logout_uris
     config_accessor :connection_type
-    config_accessor :oxd_host
     config_accessor :dynamic_registration
     config_accessor :prompt
     config_accessor :id_token
@@ -115,7 +114,6 @@ module Oxd
     config.claims_redirect_uri = []
     config.op_discovery_path = ""
     config.protection_access_token = ""
-    config.oxd_host = ""
     config.dynamic_registration = true
     config.connection_type = 'local'
   end 
