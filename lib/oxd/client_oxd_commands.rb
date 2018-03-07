@@ -76,7 +76,7 @@ module Oxd
 		# @param custom_params [Hash] OPTIONAL, custom parameters		
 		# @return [String] authorization_url
 		# method to get authorization url that the user must be redirected to for authorization and authentication		
-		def get_authorization_url(scope = [], acr_values = [], custom_params = {})
+		def get_authorization_url(scope: [], acr_values: [], custom_params: {})
 			logger("@configuration object params #{@configuration.inspect}")
 			
 			@command = 'get_authorization_url'			

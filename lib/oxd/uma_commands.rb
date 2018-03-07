@@ -24,7 +24,7 @@ module Oxd
 		# @param path [STRING] REQUIRED
 		# @param conditions [HASH] REQUIRED (variable number of conditions can be passed)
 		# @return [ARRAY] resources
-		# @example
+		# @example : 1
 		#   condition1 = {
 		#		:httpMethods => ["GET"],
 		#		:scopes => ["http://photoz.example.com/dev/actions/view"]
@@ -38,15 +38,8 @@ module Oxd
 		#		:ticketScopes => ["http://photoz.example.com/dev/actions/add"]
 		#	}
 		#   uma_add_resource("/photo", condition1, condition2)
-		# combines multiple resources into @resources array to pass to uma_rs_protect method
-		def uma_add_resource(path, *conditions)			
-		    @resources.push({:path => path, :conditions => conditions})			
-		end
-
-		# @param path [STRING] REQUIRED
-		# @param conditions [HASH] REQUIRED (variable number of conditions can be passed)
-		# @return [ARRAY] resources
-		# @example
+		#
+		# @example : 2 (with scope expressions)
 		# 	condition = {
 		#		:httpMethods => ["GET"],
 		#		:scope_expression => {
@@ -67,7 +60,7 @@ module Oxd
 		#	}
 		#   uma_add_resource("/photo", condition)
 		# combines multiple resources into @resources array to pass to uma_rs_protect method
-		def uma_add_resource_with_scope_expressions(path, *conditions)			
+		def uma_add_resource(path, *conditions)			
 		    @resources.push({:path => path, :conditions => conditions})			
 		end
 
@@ -75,7 +68,7 @@ module Oxd
 		# @raise RuntimeError if @resources is nil
 		# method to protect resources with UMA resource server
 		def uma_rs_protect
-			trigger_error("Please set resources with uma_add_resource(path, *conditions) or uma_add_resource_with_scope_expressions(path, *conditions) method first.") if(@resources.nil?)
+			trigger_error("Please set resources with uma_add_resource(path, *conditions) method first.") if(@resources.nil?)
 			logger("UMA configuration #{@configuration}")
 			@command = 'uma_rs_protect'
 			@params = default_params.merge({ "resources" => @resources })

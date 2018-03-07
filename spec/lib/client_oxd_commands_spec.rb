@@ -53,7 +53,7 @@ describe ClientOxdCommands do
 		end
 
 		it 'accepts acr_values as optional params' do
-		    authorization_url = @oxd_command.get_authorization_url(["basic", "gplus"])
+		    authorization_url = @oxd_command.get_authorization_url(acr_values: ["basic", "gplus"])
 		    expect(authorization_url).to match(/basic/)
 		    expect(authorization_url).to match(/gplus/)
 		end
