@@ -1,4 +1,5 @@
 # Gem version
 module Oxd
-    VERSION = "0.1.9"
+	# version of the oxd-ruby gem
+    VERSION = "1.0.0"
 end

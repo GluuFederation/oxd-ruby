@@ -3,6 +3,9 @@ require 'oxd-ruby'
 require 'oxd_test_config'
 require 'socket'
 require 'ipaddr'
-require 'logger' 
+require 'logger'
+require 'net/http'
+require 'json'
+require 'uri'
 
 include Oxd

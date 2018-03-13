@@ -1,10 +1,10 @@
 require 'active_support/configurable'
 
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.1
+# @note supports oxd-version 3.1.2
 module Oxd
 
-  # Configures global settings for Oxd
+  # Configures global settings for oxd
   # @yield config
   # @example
   #   Oxd.configure do |config|
@@ -17,7 +17,7 @@ module Oxd
     end
   end
 
-  # Global settings for Oxd
+  # Global settings for oxd
   def self.config
     @config
   end
@@ -32,7 +32,6 @@ module Oxd
     config_accessor :client_secret
     config_accessor :client_name
     config_accessor :authorization_redirect_uri
-    config_accessor :logout_redirect_uri
     config_accessor :post_logout_redirect_uri
     config_accessor :scope
     config_accessor :grant_types
@@ -43,9 +42,8 @@ module Oxd
     config_accessor :client_token_endpoint_auth_method
     config_accessor :client_request_uris
     config_accessor :contacts
-    config_accessor :client_logout_uris
+    config_accessor :client_frontchannel_logout_uris
     config_accessor :connection_type
-    config_accessor :oxd_host
     config_accessor :dynamic_registration
     config_accessor :prompt
     config_accessor :id_token
@@ -56,6 +54,8 @@ module Oxd
     config_accessor :client_sector_identifier_uri
     config_accessor :ui_locales
     config_accessor :claims_locales
+    config_accessor :claims_redirect_uri
+    config_accessor :op_discovery_path
     config_accessor :protection_access_token
 
     # define param_name writer
@@ -68,17 +68,19 @@ module Oxd
     class_eval writer, __FILE__, line
   end
 
-  #[oxd]
+  # ****** config to hold the information about the oxd module that has been deployed (host, port, etc.) ******
   # oxd_host_ip : the host is generally localhost as all communication are carried out between oxd-ruby and oxd server using sockets.
   # oxd_host_port: the port is the one which is configured during the oxd deployment
   
-  #[client]
+  # ****** config to hold the information which are specific to website like the redirect uris ******
+  # op_host: Host URL of the OpenID Provider
   # application_type: the app_type is generally 'web' although 'native' can be used for native app
-  # authorization_redirect_uri: [REQUIRED] this is the primary redirect URL of the website or app
-  # => the first one is always your primary uri set in authorization_redirect_uri
+  # prompt: 'login' is required if you want to force alter current user session
+  # authorization_redirect_uri: [REQUIRED] Redirect uri to which user will be redirected after authorization
   # post_logout_redirect_uri: [OPTIONAL] website's public uri to call upon logout
-  # client_logout_uris:  [REQUIRED, LIST] logout uris of the client
-  # grant_types: [OPTIONAL, LIST] grant types to "authorization_code" or "refresh_token"
+  # client_frontchannel_logout_uris:  [REQUIRED, LIST] logout uris of the client which will be called by the OpenID provider when logout happens. This is a good place to clear session/cookies.
+  # grant_types: [OPTIONAL, LIST] grant types supported by the openid server, ["authorization_code", "client_credentials"]
+  # => 'client_credentials' is required for the UMA
   # acr_values: [OPTIONAL, LIST] the values are "basic" and "duo"
   # client_jwks_uri: [OPTIONAL]
   # client_token_endpoint_auth_method: [OPTIONAL]
@@ -94,8 +96,7 @@ module Oxd
   	config.prompt = "login"
   	config.authorization_redirect_uri = "https://gluu.example.com/callback"
   	config.post_logout_redirect_uri = "https://gluu.example.com/logout"
-  	config.client_logout_uris = ["https://gluu.example.com/callback"]
-  	config.logout_redirect_uri = 'https://gluu.example.com/logout'
+  	config.client_frontchannel_logout_uris = ["https://gluu.example.com/callback"]
   	config.grant_types = []
   	config.acr_values = ["basic"]
   	config.client_jwks_uri = ""
@@ -110,8 +111,9 @@ module Oxd
     config.client_sector_identifier_uri = ""
     config.ui_locales = []
     config.claims_locales = []
+    config.claims_redirect_uri = []
+    config.op_discovery_path = ""
     config.protection_access_token = ""
-    config.oxd_host = ""
     config.dynamic_registration = true
     config.connection_type = 'local'
   end 
