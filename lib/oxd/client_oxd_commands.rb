@@ -166,7 +166,7 @@ module Oxd
 		end
 
 		# @return [Boolean] status - if site registration was updated successfully or not
-		# method to update the website's information with OpenID Provider. 
+		# method to update the website's information for oxd server. 
 		# 	This should be called after changing the values in the oxd_config file.		
 		def update_site
 	    	@command = 'update_site'
@@ -187,7 +187,7 @@ module Oxd
 		end
 
 		# @return [String] oxd_id - if site data was cleaned successfully
-		# method to clean up the website's information from OpenID Provider. 		
+		# method to clean up the website's information from oxd server. 		
 		def remove_site
 	    	@command = 'remove_site'
         	@params = {
