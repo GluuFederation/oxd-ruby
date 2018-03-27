@@ -174,6 +174,7 @@ module Oxd
         		{
 		        	"oxd_id" => @configuration.oxd_id,
 					"client_secret_expires_at" => 3080736637943,
+					"oxd_rp_programming_language" => "ruby",
 					"protection_access_token" => @configuration.protection_access_token
 				}
         	)				
@@ -231,7 +232,8 @@ module Oxd
 				"application_type" => @configuration.application_type,
 				"claims_redirect_uri" => @configuration.claims_redirect_uri,
 				"client_id" => @configuration.client_id,
-		        "client_secret" => @configuration.client_secret
+		        "client_secret" => @configuration.client_secret,
+		        "oxd_rp_programming_language" => "ruby"
 			}
 		end
 
