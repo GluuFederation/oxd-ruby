@@ -5,7 +5,7 @@ require 'json'
 require 'uri'
 
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.3
 module Oxd
 
 	# A class which takes care of the socket communication with oxd Server.

@@ -1,7 +1,7 @@
 require 'active_support/configurable'
 
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.3
 module Oxd
 
   # Configures global settings for oxd
@@ -57,6 +57,7 @@ module Oxd
     config_accessor :claims_redirect_uri
     config_accessor :op_discovery_path
     config_accessor :protection_access_token
+    config_accessor :overwrite_uma_resource
 
     # define param_name writer
     def param_name
@@ -86,6 +87,7 @@ module Oxd
   # client_token_endpoint_auth_method: [OPTIONAL]
   # client_request_uris: [OPTIONAL]
   # contacts: [OPTIONAL, LIST]
+  # overwrite_uma_resource: [OPTIONAL, BOOLEAN] true - to remove existing UMA Resource and register new based on JSON Document, if false then resource protection command will fail with error uma_protection_exists
   
   # default values for config
   configure do |config|
@@ -116,5 +118,6 @@ module Oxd
     config.protection_access_token = ""
     config.dynamic_registration = true
     config.connection_type = 'local'
+    config.overwrite_uma_resource = false
   end 
 end

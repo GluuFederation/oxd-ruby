@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.3
 module Oxd
 
 	require 'json'
@@ -71,7 +71,7 @@ module Oxd
 			trigger_error("Please set resources with uma_add_resource(path, *conditions) method first.") if(@resources.nil?)
 			logger("UMA configuration #{@configuration}")
 			@command = 'uma_rs_protect'
-			@params = default_params.merge({ "resources" => @resources })
+			@params = default_params.merge({ "overwrite" => @configuration.overwrite_uma_resource, "resources" => @resources })
 	        request('uma-rs-protect')
 	        getResponseData['oxd_id']
 		end

@@ -1,5 +1,5 @@
 # @author Inderpal Singh
-# @note supports oxd-version 3.1.2
+# @note supports oxd-version 3.1.3
 module Oxd
 
 	require 'json'

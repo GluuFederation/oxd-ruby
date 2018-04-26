@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2018-04-26
+### Added
+- new parameter `overwrite` for `uma_rs_protect` command
+
 ## [1.0.2] - 2018-03-05
 ### Added
 - support for "client_credentials" `grant_type`

@@ -10,6 +10,7 @@ Oxd.configure do |config|
 	config.authorization_redirect_uri 			= "https://domain.example.com/callback"
 	config.post_logout_redirect_uri	  			= "https://domain.example.com/logout"
 	config.claims_redirect_uri	  				= ["https://domain.example.com/claims"]
+	config.overwrite_uma_resource	  			= false
 	config.scope					  			= ["openid","profile", "email", "uma_protection","uma_authorization"]
 	config.grant_types							= ["authorization_code","client_credenitals"]
 	config.application_type       	  			= "web"

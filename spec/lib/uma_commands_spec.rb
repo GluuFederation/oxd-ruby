@@ -31,9 +31,15 @@ describe UMACommands do
 			expect{ @uma_command.uma_rs_protect }.to raise_error(RuntimeError)
 		end
 
+		it 'raises error if overwrite=false is used with single oxd-id' do
+			@uma_command.instance_variable_set :@resources, [{:path => "/photo", :conditions => [{:httpMethods=>["GET"],:scopes => ["http://photoz.example.com/dev/actions/view"]}, {:httpMethods => ["PUT","POST"],:scopes => ["http://photoz.example.com/dev/actions/all","http://photoz.example.com/dev/actions/add"],:ticketScopes => ["http://photoz.example.com/dev/actions/add"]}]}]
+			Oxd.config.overwrite_uma_resource = false
+		    expect{ @uma_command.uma_rs_protect }.to raise_error(RuntimeError)
+		end
+
 		it 'raises error if response has error' do
 			@uma_command.instance_variable_set :@resources, [:paths => "/photo"]
-			expect{ @uma_command.uma_rs_protect }.to raise_error(Oxd::ServerError)
+			expect{ @uma_command.uma_rs_protect }.to raise_error(RuntimeError)
 		end
 	end
 	
