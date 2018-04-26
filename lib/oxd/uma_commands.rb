@@ -66,6 +66,9 @@ module Oxd
 
 		# @return [STRING] oxd_id
 		# @raise RuntimeError if @resources is nil
+		# @note overwrite_uma_resource: [OPTIONAL, BOOLEAN] Set in oxd-config.rb, 
+		# 	True - to remove existing UMA Resource and register new based on JSON Document, 
+		# 	False - resource protection command will fail with error uma_protection_exists		
 		# method to protect resources with UMA resource server
 		def uma_rs_protect
 			trigger_error("Please set resources with uma_add_resource(path, *conditions) method first.") if(@resources.nil?)
